@@ -1,0 +1,5 @@
+C:\Users\user\source\repos\EruptRecorder\EruptRecorder\obj\Debug\EruptRecorder.csprojAssemblyReference.cache
+C:\Users\user\source\repos\EruptRecorder\EruptRecorder\obj\Debug\MainWindow.g.cs
+C:\Users\user\source\repos\EruptRecorder\EruptRecorder\obj\Debug\App.g.cs
+C:\Users\user\source\repos\EruptRecorder\EruptRecorder\obj\Debug\EruptRecorder_MarkupCompile.cache
+C:\Users\user\source\repos\EruptRecorder\EruptRecorder\obj\Debug\EruptRecorder_MarkupCompile.lref
