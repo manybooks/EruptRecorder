@@ -6,17 +6,21 @@ using System.Text;
 using System.Threading.Tasks;
 using EruptRecorder.Models;
 using EruptRecorder.Settings;
+using EruptRecorder.Logging;
 
 namespace EruptRecorder.Jobs
 {
     public class CopyJob
     {
-        public void Run(List<EventTriger> trigers, CopySetting copySetting, RecordingSetting recordingSetting)
+        public void Run(List<EventTriger> trigers, CopySetting copySetting, RecordingSetting recordingSetting, string logOutputPath)
         {
+            EruptLogging logging = new EruptLogging();
+            var logger = logging.CreateLogger("CopyJobLogger", logOutputPath);
+
             if (!copySetting.isActive) return;
             if (trigers == null || trigers?.Count() == 0)
             {
-                logger.LogInfo("トリガーとなるCSVファイルの読み込みがうまく行かなかった可能性があります。");
+                logger.Info("トリガーとなるCSVファイルの読み込みがうまく行かなかった可能性があります。");
                 return;
             }
 
@@ -31,21 +35,21 @@ namespace EruptRecorder.Jobs
             List<CopyCondition> copyConditions = GetCopyConditionsFrom(trigersToCheck, copySetting.index, recordingSetting.minutesToGoBack);
             if (copyConditions?.Count() == 0)
             {
-                logger.LogInfo($"前回のジョブ起動から、Index '{copySetting.index}'のトリガーレコードは増えていませんでした。");
+                logger.Info($"前回のジョブ起動から、Index '{copySetting.index}'のトリガーレコードは増えていませんでした。");
                 return;
             }
 
             List<FileInfo> filesToCopy = GetCopyTargetFiles(copyConditions, copySetting);
             if (filesToCopy?.Count() == 0)
             {
-                logger.LogWarn($"コピー元のディレクトリ{copySetting.srcDir}に条件を満たすファイルが見つかりませんでした。");
+                logger.Warn($"コピー元のディレクトリ{copySetting.srcDir}に条件を満たすファイルが見つかりませんでした。");
                 return;
             }
 
             bool done = ExecuteCopy(filesToCopy, copySetting);
             if (!done)
             {
-                logger.LogWarn("コピーに失敗しました。");
+                logger.Warn("コピーに失敗しました。");
             }
         }
 
