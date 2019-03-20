@@ -11,12 +11,12 @@ namespace EruptRecorder.Settings
     {
         public bool isActive { get; set; }
         public int index { get; set; }
-        public DirectoryInfo srcDir { get; set; }
-        public DirectoryInfo destDir { get; set; }
+        public string srcDir { get; set; }
+        public string destDir { get; set; }
         public string prefix { get; set; }
         public string fileExtension { get; set; }
 
-        public CopySetting(bool isActive, int index, DirectoryInfo srcDir, DirectoryInfo destDir, string prefix, string fileExtension)
+        public CopySetting(bool isActive, int index, string srcDir, string destDir, string prefix, string fileExtension)
         {
             this.isActive = isActive;
             this.index = index;
