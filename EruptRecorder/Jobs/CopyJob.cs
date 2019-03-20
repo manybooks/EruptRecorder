@@ -53,6 +53,7 @@ namespace EruptRecorder.Jobs
             }
         }
 
+
         public List<CopyCondition> MergeTrigers(List<EventTriger> eventTrigers)
         {
             return new List<CopyCondition>();
@@ -106,6 +107,18 @@ namespace EruptRecorder.Jobs
                 copyConditions.Add(currentCondition);
             }
             return copyConditions;
+        }
+
+        public List<FileInfo> GetCopyTargetFiles(List<CopyCondition> copyConditions, CopySetting copySetting)
+        {
+            // FIXMe
+            return null;
+        }
+        
+        public bool ExecuteCopy(List<FileInfo> filesToCopy, CopySetting copySetting)
+        {
+            // FIXME
+            return true;
         }
 
     }
