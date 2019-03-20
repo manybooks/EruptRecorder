@@ -25,7 +25,6 @@ namespace EruptRecorder
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = viewModel;
             this.CopySettings.ItemsSource = viewModel.copySettings;
         }
     }
