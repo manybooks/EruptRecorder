@@ -40,6 +40,10 @@ using System.Windows;
                                               //アプリケーション、またはいずれのテーマ固有のリソース ディクショナリにも見つからない場合に使用されます)
 )]
 
+// log4net を利用するための設定
+//
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "../../log4net.config", Watch = true)]
+
 
 // アセンブリのバージョン情報は次の 4 つの値で構成されています:
 //
