@@ -5,17 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EruptRecorder"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="800" Background="LightGray">
     <Grid>
-        <DataGrid x:Name="CopySettings" IsReadOnly="False" AutoGenerateColumns="False">
+        
+        <Canvas>
+            <Label Name="TimeToGoBackLabel" Canvas.Top="10" Canvas.Left="40" Content="さかのぼり時間" FontSize="15"/>
+            <TextBox Name="TimeToGoBack" Canvas.Top="40" Canvas.Left="45" Width="60" Height="30"/>
+            <Label Name="TimeToGoBackMinutesLabel" Canvas.Top="40" Canvas.Left="105" Content="分" FontSize="15"/>
+
+            <Label Name="DetectIntervalLabel" Canvas.Top="10" Canvas.Left="180" Content="検出インターバル" FontSize="15"/>
+            <TextBox Name="DetectInterval" Canvas.Top="40" Canvas.Left="190" Width="60" Height="30"/>
+            <Label Name="DetectIntervalMinutesLabel" Canvas.Top="40" Canvas.Left="250" Content="分" FontSize="15"/>
+        </Canvas>
+        
+        <DataGrid x:Name="CopySettings" IsReadOnly="False" AutoGenerateColumns="False" Margin="40,120,20,200" MinRowHeight="20">
             <DataGrid.Columns>
                 <DataGridCheckBoxColumn Binding="{Binding Path=isActive}" Header="有効"/>
-                <DataGridTextColumn Binding="{Binding Path=index}" Width="100" Header="INX"/>
-                <DataGridTextColumn Binding="{Binding Path=prefix}" Width="100" Header="Prefix"/>
-                <DataGridTextColumn Binding="{Binding Path=fileExtension}" Width="100" Header="拡張子"/>
+                <DataGridTextColumn Binding="{Binding Path=index}" Width="30" Header="INX"/>
+                <DataGridTextColumn Binding="{Binding Path=prefix}" Width="80" Header="Prefix"/>
+                <DataGridTextColumn Binding="{Binding Path=fileExtension}" Width="50" Header="拡張子"/>
                 <DataGridTextColumn Binding="{Binding Path=destDir}" Width="*" Header="コピー先"/>
                 <DataGridTextColumn Binding="{Binding Path=srcDir}" Width="*" Header="コピー元"/>
             </DataGrid.Columns>
         </DataGrid>
+
+        <Canvas>
+            <Label Name="LogOutputDirLabel" Canvas.Top="300" Canvas.Left="40" Content="ログ保存場所フォルダ" FontSize="15"/>
+            <TextBox Name="LogOutputDir" Canvas.Top="330" Canvas.Left="45" Width="400" Height="30"/>
+
+            <Button Name="Ok" Content="OK" Canvas.Top="380" Canvas.Left="500" Width="70" Height="30"/>
+            <Button Name="Cancel" Content="キャンセル" Canvas.Top="380" Canvas.Left="600" Width="100" Height="30"/>
+        </Canvas>
     </Grid>
 </Window>
