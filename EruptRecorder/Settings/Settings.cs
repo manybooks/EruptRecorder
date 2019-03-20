@@ -14,8 +14,10 @@ namespace EruptRecorder.Settings
         public RecordingSetting recordingSetting { get; set; }
         public LoggingSetting loggingSetting { get; set; }
 
+
         public SettingsViewModel()
         {
+            /*
             // TODO: デバッグ用コード。あとで消す。
             this.copySettings = new ObservableCollection<CopySetting>
             {
@@ -26,6 +28,7 @@ namespace EruptRecorder.Settings
             };
             this.recordingSetting = new RecordingSetting(5);
             this.loggingSetting = new LoggingSetting("log/");
+            */
         }
     }
 

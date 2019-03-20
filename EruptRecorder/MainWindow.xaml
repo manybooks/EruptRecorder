@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EruptRecorder"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800" Background="LightGray">
+        Title="MainWindow" Height="500" Width="800" Background="LightGray"
+        Closing="OnClosing">
     <Grid>
         
         <Canvas>
@@ -18,7 +19,7 @@
             <Label Name="DetectIntervalMinutesLabel" Canvas.Top="40" Canvas.Left="250" Content="分" FontSize="15"/>
         </Canvas>
         
-        <DataGrid x:Name="CopySettings" IsReadOnly="False" AutoGenerateColumns="False" Margin="40,120,20,200" MinRowHeight="20">
+        <DataGrid x:Name="CopySettings" IsReadOnly="False" AutoGenerateColumns="False" Margin="40,120,20,200" MinRowHeight="20" CanUserAddRows="True">
             <DataGrid.Columns>
                 <DataGridCheckBoxColumn Binding="{Binding Path=isActive}" Header="有効"/>
                 <DataGridTextColumn Binding="{Binding Path=index}" Width="30" Header="INX"/>
