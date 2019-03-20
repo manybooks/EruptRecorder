@@ -7,6 +7,15 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <DataGrid x:Name="CopySettings" IsReadOnly="False" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Binding="{Binding Path=isActive}" Header="有効"/>
+                <DataGridTextColumn Binding="{Binding Path=index}" Width="100" Header="INX"/>
+                <DataGridTextColumn Binding="{Binding Path=prefix}" Width="100" Header="Prefix"/>
+                <DataGridTextColumn Binding="{Binding Path=fileExtension}" Width="100" Header="拡張子"/>
+                <DataGridTextColumn Binding="{Binding Path=destDir}" Width="*" Header="コピー先"/>
+                <DataGridTextColumn Binding="{Binding Path=srcDir}" Width="*" Header="コピー元"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

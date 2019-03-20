@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using EruptRecorder.Settings;
 
 namespace EruptRecorder
 {
@@ -20,9 +21,12 @@ namespace EruptRecorder
     /// </summary>
     public partial class MainWindow : Window
     {
+        public SettingsViewModel viewModel = new SettingsViewModel();
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = viewModel;
+            this.CopySettings.ItemsSource = viewModel.copySettings;
         }
     }
 }
