@@ -38,4 +38,14 @@ namespace EruptRecorder.Settings
             this.minutesToGoBack = minutesToGoBack;
         }
     }
+
+    public class LoggingSetting
+    {
+        public string logOutputDir { get; set; }
+
+        public LoggingSetting(string logOutputDir)
+        {
+            this.logOutputDir = logOutputDir;
+        }
+    }
 }
