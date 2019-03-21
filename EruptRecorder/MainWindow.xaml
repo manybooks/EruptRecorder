@@ -10,13 +10,13 @@
     <Grid>
         
         <Canvas>
-            <Label Name="TimeToGoBackLabel" Canvas.Top="10" Canvas.Left="40" Content="さかのぼり時間" FontSize="15"/>
-            <TextBox Name="TimeToGoBack" Canvas.Top="40" Canvas.Left="45" Width="60" Height="30"/>
-            <Label Name="TimeToGoBackMinutesLabel" Canvas.Top="40" Canvas.Left="105" Content="分" FontSize="15"/>
+            <Label Name="MinutesToGoBackLabel" Canvas.Top="10" Canvas.Left="40" Content="さかのぼり時間" FontSize="15"/>
+            <TextBox Name="MinutesToGoBack" Text="{Binding Path=minutesToGoBack}" FontSize="15" Canvas.Top="42" Canvas.Left="45" Width="60" Height="30"/>
+            <Label Name="MinutesToGoBackMinutesLabel" Canvas.Top="40" Canvas.Left="105" Content="分" FontSize="15"/>
 
-            <Label Name="DetectIntervalLabel" Canvas.Top="10" Canvas.Left="180" Content="検出インターバル" FontSize="15"/>
-            <TextBox Name="DetectInterval" Canvas.Top="40" Canvas.Left="190" Width="60" Height="30"/>
-            <Label Name="DetectIntervalMinutesLabel" Canvas.Top="40" Canvas.Left="250" Content="分" FontSize="15"/>
+            <Label Name="IntervalMinutesToDetectLabel" Canvas.Top="10" Canvas.Left="180" Content="検出インターバル" FontSize="15"/>
+            <TextBox Name="IntervalMinutesToDetect" Text="{Binding Path=intervalMinutesToDetect}" FontSize="15" Canvas.Top="40" Canvas.Left="190" Width="60" Height="30"/>
+            <Label Name="IntervalMinutesToDetectMinutesLabel" Canvas.Top="40" Canvas.Left="250" Content="分" FontSize="15"/>
         </Canvas>
         
         <DataGrid x:Name="CopySettings" IsReadOnly="False" AutoGenerateColumns="False" Margin="40,120,20,200" MinRowHeight="20" CanUserAddRows="True">
@@ -32,7 +32,7 @@
 
         <Canvas>
             <Label Name="LogOutputDirLabel" Canvas.Top="300" Canvas.Left="40" Content="ログ保存場所フォルダ" FontSize="15"/>
-            <TextBox Name="LogOutputDir" Canvas.Top="330" Canvas.Left="45" Width="400" Height="30"/>
+            <TextBox Name="LogOutputDir" Text="{Binding Path=logOutputDir}" FontSize="15" Canvas.Top="330" Canvas.Left="45" Width="400" Height="30"/>
 
             <Button Name="Ok" Content="OK" Canvas.Top="380" Canvas.Left="500" Width="70" Height="30"/>
             <Button Name="Cancel" Content="キャンセル" Canvas.Top="380" Canvas.Left="600" Width="100" Height="30"/>

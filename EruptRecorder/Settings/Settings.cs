@@ -48,8 +48,8 @@ namespace EruptRecorder.Settings
 
     public class RecordingSetting
     {
-        public int minutesToGoBack { get; set; }
-        public int runPerMinutes { get; set; }
+        public int minutesToGoBack { get; set; } = 1;
+        public int intervalMinutesToDetect { get; set; } = 1;
         public DateTime timeOfLastRun { get; set; }
 
         public RecordingSetting(int minutesToGoBack)
