@@ -30,6 +30,7 @@ namespace EruptRecorder
     {
         ILog logger;
         private const string SETTING_FILE_NAME = "settings.json";
+        private const string TRIGGER_FILE_NAME = "trigger.csv";
         public SettingsViewModel viewModel;
 
         public MainWindow()
@@ -49,17 +50,16 @@ namespace EruptRecorder
                 // 異常終了しても設定を失わないように
                 SaveSettings();
             }
-
         }
 
         public void ExecuteCopy()
         {
             UpdateLogger();
-            ReadTrigerJob readTrigerJob = new ReadTrigerJob("");
+            ReadTrigerJob readTrigerJob = new ReadTrigerJob(System.IO.Path.Combine(GetProjectRootDir().FullName, TRIGGER_FILE_NAME));
             List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(viewModel.recordingSetting.timeOfLastRun);
             foreach(CopySetting copySetting in viewModel.copySettings)
             {
-                CopyJob copyJob = new CopyJob();
+                CopyJob copyJob = new CopyJob(logger);
                 copyJob.Run(eventTriggers, copySetting, viewModel.recordingSetting, logger);
             }
         }
@@ -86,10 +86,16 @@ namespace EruptRecorder
             SaveSettings();
         }
 
-        private string GetSettingFilePath()
+        private DirectoryInfo GetProjectRootDir()
         {
             string currentDir = Directory.GetCurrentDirectory();
             var projectRootDir = Directory.GetParent(currentDir).Parent.Parent;
+            return projectRootDir;
+        }
+
+        private string GetSettingFilePath()
+        {
+            var projectRootDir = GetProjectRootDir();
             var settingFilePath = System.IO.Path.Combine(projectRootDir.FullName, SETTING_FILE_NAME);
             return settingFilePath;
         }

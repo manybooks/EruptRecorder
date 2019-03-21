@@ -10,7 +10,7 @@ namespace EruptRecorder.Jobs
     {
         public string inputFilePath { get; set; }
 
-        public ReadTrigerJob(string inputFilePath, DateTime lastRunTime)
+        public ReadTrigerJob(string inputFilePath)
         {
             this.inputFilePath = inputFilePath;
         }
