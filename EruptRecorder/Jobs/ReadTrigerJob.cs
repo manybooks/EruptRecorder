@@ -21,7 +21,7 @@ namespace EruptRecorder.Jobs
         public List<EventTrigger> Run(DateTime timeOfLastRun)
         {
             List<EventTrigger> trigers = ReadTriggerFile(timeOfLastRun);
-            return trigers;
+            return trigers.Where(trigger => trigger.timeStamp >= timeOfLastRun).ToList();
         }
 
         public List<EventTrigger> ReadTriggerFile(DateTime timeOfLastRun)
@@ -42,12 +42,6 @@ namespace EruptRecorder.Jobs
                         var line = sr.ReadLine();
                         EventTrigger eventTriger = EventTrigger.Parse(line);
                         
-                        // 前回読み込んだところまで読んだら強制的に終了する
-                        if (eventTriger.timeStamp < timeOfLastRun)
-                        {
-                            break;
-                        }
-
                         result.Add(eventTriger);
                     }
                 }
