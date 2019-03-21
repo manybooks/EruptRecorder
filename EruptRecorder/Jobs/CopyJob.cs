@@ -30,8 +30,8 @@ namespace EruptRecorder.Jobs
             }
 
             List<EventTrigger> trigersToCheck = trigers.Where(triger => triger.timeStamp > recordingSetting.timeOfLastRun)
-                                                      .OrderBy(triger => triger.timeStamp)
-                                                      .ToList();
+                                                       .OrderBy(triger => triger.timeStamp)
+                                                       .ToList();
             if (trigersToCheck?.Count() == 0)
             {
                 return;
