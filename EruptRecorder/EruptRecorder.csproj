@@ -78,7 +78,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\EventTriger.cs" />
+    <Compile Include="Models\EventTrigger.cs" />
     <Compile Include="Jobs\CopyJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
