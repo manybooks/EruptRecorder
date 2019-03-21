@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EruptRecorder.Models;
+using EruptRecorder.Settings;
 
 namespace EruptRecorder.Jobs
 {
@@ -9,24 +10,25 @@ namespace EruptRecorder.Jobs
     {
         public string inputFilePath { get; set; }
 
-        public ReadTrigerJob(string inputFilePath)
+        public ReadTrigerJob(string inputFilePath, DateTime lastRunTime)
         {
             this.inputFilePath = inputFilePath;
         }
 
         public List<EventTrigger> Run(DateTime timeOfLastRun)
         {
-            List<EventTrigger> trigers = ReadFile();
-            return trigers.Where(triger => triger.timeStamp > timeOfLastRun).ToList();
+            List<EventTrigger> trigers = ReadTriggerFile(timeOfLastRun);
+            return trigers;
         }
 
-        public List<EventTrigger> ReadFile()
+        public List<EventTrigger> ReadTriggerFile(DateTime timeOfLastRun)
         {
             List<EventTrigger> result = new List<EventTrigger>();
-            try
+
+            // csvファイルを開く
+            using (var sr = new System.IO.StreamReader($"{inputFilePath}"))
             {
-                // csvファイルを開く
-                using (var sr = new System.IO.StreamReader($"{inputFilePath}"))
+                try
                 {
                     // ヘッダ行を飛ばす
                     sr.ReadLine();
@@ -36,14 +38,25 @@ namespace EruptRecorder.Jobs
                     {
                         var line = sr.ReadLine();
                         EventTrigger eventTriger = EventTrigger.Parse(line);
+                        
+                        // 前回読み込んだところまで読んだら強制的に終了する
+                        if (eventTriger.timeStamp < timeOfLastRun)
+                        {
+                            break;
+                        }
+
                         result.Add(eventTriger);
                     }
                 }
-            }
-            catch (System.Exception e)
-            {
-                // ファイルを開くのに失敗したとき
-                System.Console.WriteLine(e.Message);
+                catch (System.Exception e)
+                {
+                    // ファイルを開くのに失敗したとき
+                    System.Console.WriteLine(e.Message);
+                }
+                finally
+                {
+                    sr.Close();
+                }
             }
             return result;
         }
