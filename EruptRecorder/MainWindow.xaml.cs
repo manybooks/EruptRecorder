@@ -15,7 +15,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using EruptRecorder.Settings;
+using EruptRecorder.Logging;
+using EruptRecorder.Jobs;
+using EruptRecorder.Models;
 using Newtonsoft.Json;
+using log4net;
 
 namespace EruptRecorder
 {
@@ -24,6 +28,7 @@ namespace EruptRecorder
     /// </summary>
     public partial class MainWindow : Window
     {
+        ILog logger;
         private const string SETTING_FILE_NAME = "settings.json";
         public SettingsViewModel viewModel;
 
@@ -46,7 +51,34 @@ namespace EruptRecorder
 
         }
 
-        public void OnClosing(object sender, CancelEventArgs e)
+        public void ExecuteCopy()
+        {
+            // 最新のログ出力フォルダを反映
+            EruptLogging logging = new EruptLogging();
+            logging.CreateLogger("EruptRecorderLogger", viewModel.loggingSetting.logOutputDir);
+
+            ReadTrigerJob readTrigerJob = new ReadTrigerJob("");
+            List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(viewModel.recordingSetting.timeOfLastRun);
+            foreach(CopySetting copySetting in viewModel.copySettings)
+            {
+                CopyJob copyJob = new CopyJob();
+                copyJob.Run(eventTriggers, copySetting, viewModel.recordingSetting, logger);
+            }
+        }
+
+        public void OnClickOkButton(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("OKボタンがクリックされました");
+
+
+        }
+
+        public void OnClickCancelButton(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("キャンセルボタンがクリックされました");
+        }
+
+        public void OnClosingWindow(object sender, CancelEventArgs e)
         {
             SaveSettings();
         }

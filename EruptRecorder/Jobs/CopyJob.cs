@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 using EruptRecorder.Models;
 using EruptRecorder.Settings;
 using EruptRecorder.Logging;
+using log4net;
 
 namespace EruptRecorder.Jobs
 {
     public class CopyJob
     {
-        public void Run(List<EventTrigger> trigers, CopySetting copySetting, RecordingSetting recordingSetting, string logOutputPath)
+        public void Run(List<EventTrigger> trigers, CopySetting copySetting, RecordingSetting recordingSetting, ILog logger)
         {
-            EruptLogging logging = new EruptLogging();
-            var logger = logging.CreateLogger("CopyJobLogger", logOutputPath);
-
             if (!copySetting.isActive) return;
             if (trigers == null || trigers?.Count() == 0)
             {
