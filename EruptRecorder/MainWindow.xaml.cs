@@ -44,6 +44,9 @@ namespace EruptRecorder
                 this.TimeOfLastRun.DataContext = viewModel.recordingSetting;
                 this.CopySettings.ItemsSource = viewModel.copySettings;
                 this.LogOutputDir.DataContext = viewModel.loggingSetting;
+
+                UpdateLogger();
+                logger.Info("システムを起動しました。");
             }
             finally
             {
@@ -90,7 +93,16 @@ namespace EruptRecorder
 
         public void OnClosingWindow(object sender, CancelEventArgs e)
         {
-            SaveSettings();
+            try
+            {
+                SaveSettings();
+                logger.Info("システムを正常に終了しました。");
+            }
+            catch (Exception ex)
+            {
+                logger.Error("各種設定情報の保存に失敗しました。");
+                logger.Error(ex.Message);
+            }
         }
 
         private DirectoryInfo GetProjectRootDir()
