@@ -2,7 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EruptRecorder.Models;
 using EruptRecorder.Settings;
@@ -13,6 +13,13 @@ namespace EruptRecorder.Jobs
 {
     public class CopyJob
     {
+        private ILog logger { get; set; }
+
+        public CopyJob(ILog logger)
+        {
+            this.logger = logger;
+        }
+
         public void Run(List<EventTrigger> trigers, CopySetting copySetting, RecordingSetting recordingSetting, ILog logger)
         {
             if (!copySetting.isActive) return;
@@ -109,8 +116,25 @@ namespace EruptRecorder.Jobs
 
         public List<FileInfo> GetCopyTargetFiles(List<CopyCondition> copyConditions, CopySetting copySetting)
         {
-            // FIXMe
-            return null;
+            List<FileInfo> targetFiles = new List<FileInfo>();
+            try
+            {
+                DirectoryInfo srcDirectory = new DirectoryInfo(copySetting.srcDir);
+                foreach(CopyCondition copyCondition in copyConditions)
+                {
+                    var filesToCopy = srcDirectory.GetFiles()
+                                                  .Where(f => copyCondition.from <= f.CreationTime && f.CreationTime <= copyCondition.to)
+                                                  .Where(f => f.Name.StartsWith(copySetting.prefix))
+                                                  .Where(f => Regex.IsMatch(f.Name, $"*.{copySetting.fileExtension}"))
+                                                  .ToList();
+                    targetFiles.AddRange(filesToCopy);
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                logger.Error($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
+            }
+            return targetFiles.Distinct(new ImageFileComparer()).ToList();
         }
         
         public bool ExecuteCopy(List<FileInfo> filesToCopy, CopySetting copySetting)
@@ -118,7 +142,20 @@ namespace EruptRecorder.Jobs
             // FIXME
             return true;
         }
+    }
 
+    public class ImageFileComparer : IEqualityComparer<FileInfo>
+    {
+        public bool Equals(FileInfo f1, FileInfo f2)
+        {
+            return f1.FullName == f2.FullName &&
+                   f1.CreationTime == f2.CreationTime;
+        }
+
+        public int GetHashCode(FileInfo f)
+        {
+            return f.GetHashCode();
+        }
     }
 
     public class CopyCondition
