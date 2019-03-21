@@ -53,10 +53,7 @@ namespace EruptRecorder
 
         public void ExecuteCopy()
         {
-            // 最新のログ出力フォルダを反映
-            EruptLogging logging = new EruptLogging();
-            logging.CreateLogger("EruptRecorderLogger", viewModel.loggingSetting.logOutputDir);
-
+            UpdateLogger();
             ReadTrigerJob readTrigerJob = new ReadTrigerJob("");
             List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(viewModel.recordingSetting.timeOfLastRun);
             foreach(CopySetting copySetting in viewModel.copySettings)
@@ -66,11 +63,16 @@ namespace EruptRecorder
             }
         }
 
+        public void UpdateLogger()
+        {
+            // 最新のログ出力フォルダを反映
+            logger = EruptLogging.CreateLogger("EruptRecorderLogger", viewModel.loggingSetting.logOutputDir);
+        }
+
         public void OnClickOkButton(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("OKボタンがクリックされました");
-
-
+            UpdateLogger();
+            logger.Info("OKボタンがクリックされました");
         }
 
         public void OnClickCancelButton(object sender, RoutedEventArgs e)

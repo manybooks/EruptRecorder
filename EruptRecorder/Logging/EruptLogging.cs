@@ -9,9 +9,9 @@ using log4net.Repository.Hierarchy;
 
 namespace EruptRecorder.Logging
 {
-    public class EruptLogging
+    public static class EruptLogging
     {
-        public ILog CreateLogger(string loggerName, string outputFilePath)
+        public static ILog CreateLogger(string loggerName, string logOutputDir)
         {
             // Loggerの生成
             var logger = LogManager.GetLogger(loggerName);
@@ -20,13 +20,13 @@ namespace EruptRecorder.Logging
             var rootLogger = ((Hierarchy)logger.Logger.Repository).Root;
 
             // RootのAppenderを取得
-            var appender = rootLogger.GetAppender("RollingLogFileAppender") as FileAppender;
+            var appender = rootLogger.GetAppender("DailyFileAppender") as FileAppender;
 
             // ファイル名の取得
             var filepath = appender.File;
 
             // ファイル名の設定
-            appender.File = outputFilePath;
+            appender.File = logOutputDir;
             appender.ActivateOptions();
 
             return logger;
