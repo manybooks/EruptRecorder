@@ -133,7 +133,7 @@ namespace EruptRecorder.Jobs
                 DirectoryInfo destDirectory = new DirectoryInfo(copySetting.destDir);
                 foreach(FileInfo f in filesToCopy)
                 {
-                    f.CopyTo(Path.Combine(destDirectory.FullName, f.Name));
+                    f.CopyTo(Path.Combine(destDirectory.FullName, f.Name), overwrite: true);
                     logger.Info($"ファイル '{f.Name}'を'{copySetting.srcDir}'から'{copySetting.destDir}'へコピーしました。");
                 }
             }
