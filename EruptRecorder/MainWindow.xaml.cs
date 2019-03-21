@@ -55,7 +55,7 @@ namespace EruptRecorder
         public void ExecuteCopy()
         {
             UpdateLogger();
-            ReadTrigerJob readTrigerJob = new ReadTrigerJob(System.IO.Path.Combine(GetProjectRootDir().FullName, TRIGGER_FILE_NAME));
+            ReadTrigerJob readTrigerJob = new ReadTrigerJob(System.IO.Path.Combine(GetProjectRootDir().FullName, TRIGGER_FILE_NAME), logger);
             List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(viewModel.recordingSetting.timeOfLastRun);
 
             List<bool> jobResults = new List<bool>();

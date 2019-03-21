@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using EruptRecorder.Models;
 using EruptRecorder.Settings;
+using log4net;
 
 namespace EruptRecorder.Jobs
 {
     public class ReadTrigerJob
     {
         public string inputFilePath { get; set; }
+        ILog logger { get; set; }
 
-        public ReadTrigerJob(string inputFilePath)
+        public ReadTrigerJob(string inputFilePath, ILog logger)
         {
             this.inputFilePath = inputFilePath;
+            this.logger = logger;
         }
 
         public List<EventTrigger> Run(DateTime timeOfLastRun)
@@ -48,10 +51,15 @@ namespace EruptRecorder.Jobs
                         result.Add(eventTriger);
                     }
                 }
+                catch (FormatException fe)
+                {
+                    // 入力ファイルの形式が不正だったとき
+                    logger.Error($"{fe.Message}");
+                }
                 catch (System.Exception e)
                 {
                     // ファイルを開くのに失敗したとき
-                    System.Console.WriteLine(e.Message);
+                    logger.Error(e.Message);
                 }
                 finally
                 {
