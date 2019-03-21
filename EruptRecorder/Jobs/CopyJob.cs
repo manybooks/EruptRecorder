@@ -139,8 +139,30 @@ namespace EruptRecorder.Jobs
         
         public bool ExecuteCopy(List<FileInfo> filesToCopy, CopySetting copySetting)
         {
-            // FIXME
-            return true;
+            bool doneSuccessfully = true;
+            try
+            {
+                DirectoryInfo destDirectory = new DirectoryInfo(copySetting.destDir);
+                foreach(FileInfo f in filesToCopy)
+                {
+                    f.CopyTo(Path.Combine(destDirectory.FullName, f.Name));
+                    logger.Info($"ファイル '{f.Name}'を'{copySetting.srcDir}'から'{copySetting.destDir}'へコピーしました。");
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                logger.Error($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
+                doneSuccessfully = false;
+            }
+            catch (Exception ex)
+            {
+                doneSuccessfully = false;
+                logger.Error($"コピー設定{copySetting.index}のファイルコピーに失敗しました。エラー内容は以下を参照してください。");
+                logger.Error("**************************************************************************************************");
+                logger.Error(ex.ToString());
+                logger.Error("**************************************************************************************************");
+            }
+            return doneSuccessfully;
         }
     }
 
