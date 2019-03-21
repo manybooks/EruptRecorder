@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -29,6 +30,7 @@ namespace EruptRecorder
     public partial class MainWindow : Window
     {
         ILog logger;
+        DispatcherTimer timer;
         private const string SETTING_FILE_NAME = "settings.json";
         private const string TRIGGER_FILE_NAME = "trigger.csv";
         public SettingsViewModel viewModel;
@@ -47,12 +49,39 @@ namespace EruptRecorder
 
                 UpdateLogger();
                 logger.Info("システムを起動しました。");
+
+                // ジョブの起動
+                StartJob();
             }
             finally
             {
                 // 異常終了しても設定を失わないように
                 SaveSettings();
             }
+        }
+
+        public void StartJob()
+        {
+            timer = new DispatcherTimer(DispatcherPriority.Normal)
+            {
+                Interval = TimeSpan.FromMinutes(viewModel.recordingSetting.intervalMinutesToDetect)
+            };
+
+            timer.Tick += (s, e) =>
+            {
+                logger.Info("ジョブを開始します。");
+                ExecuteCopy();
+                UpdateInterval();
+            };
+
+            timer.Start();
+
+            this.Closing += (s, e) => timer.Stop();
+        }
+
+        public void UpdateInterval()
+        {
+            timer.Interval = TimeSpan.FromMinutes(viewModel.recordingSetting.intervalMinutesToDetect);
         }
 
         public void ExecuteCopy()
