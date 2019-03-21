@@ -25,25 +25,13 @@ namespace EruptRecorder.Jobs
             if (!copySetting.isActive) return;
             if (trigers == null || trigers?.Count() == 0)
             {
-                logger.Info("トリガーとなるCSVファイルの読み込みがうまく行かなかった可能性があります。");
+                logger.Info($"最後にジョブを起動した{recordingSetting.timeOfLastRun}から現在までで、インデックス{copySetting.index}のコピーを要求する入力データはありませんでした。");
                 return;
             }
-
             List<EventTrigger> trigersToCheck = trigers.Where(triger => triger.timeStamp > recordingSetting.timeOfLastRun)
                                                        .OrderBy(triger => triger.timeStamp)
                                                        .ToList();
-            if (trigersToCheck?.Count() == 0)
-            {
-                return;
-            }
-
             List<CopyCondition> copyConditions = GetCopyConditionsFrom(trigersToCheck, copySetting.index, recordingSetting.minutesToGoBack);
-            if (copyConditions?.Count() == 0)
-            {
-                logger.Info($"前回のジョブ起動から、Index '{copySetting.index}'のトリガーレコードは増えていませんでした。");
-                return;
-            }
-
             List<FileInfo> filesToCopy = GetCopyTargetFiles(copyConditions, copySetting);
             if (filesToCopy?.Count() == 0)
             {
@@ -54,7 +42,7 @@ namespace EruptRecorder.Jobs
             bool done = ExecuteCopy(filesToCopy, copySetting);
             if (!done)
             {
-                logger.Warn("コピーに失敗しました。");
+                logger.Error("コピーに失敗しました。");
             }
         }
 
@@ -125,7 +113,7 @@ namespace EruptRecorder.Jobs
                     var filesToCopy = srcDirectory.GetFiles()
                                                   .Where(f => copyCondition.from <= f.CreationTime && f.CreationTime <= copyCondition.to)
                                                   .Where(f => f.Name.StartsWith(copySetting.prefix))
-                                                  .Where(f => Regex.IsMatch(f.Name, $"*.{copySetting.fileExtension}"))
+                                                  .Where(f => Regex.IsMatch(f.Name, $".+\\.{copySetting.fileExtension}"))
                                                   .ToList();
                     targetFiles.AddRange(filesToCopy);
                 }
