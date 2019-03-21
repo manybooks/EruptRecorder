@@ -14,15 +14,15 @@ namespace EruptRecorder.Jobs
             this.inputFilePath = inputFilePath;
         }
 
-        public List<EventTriger> Run(DateTime timeOfLastRun)
+        public List<EventTrigger> Run(DateTime timeOfLastRun)
         {
-            List<EventTriger> trigers = ReadFile();
+            List<EventTrigger> trigers = ReadFile();
             return trigers.Where(triger => triger.timeStamp > timeOfLastRun).ToList();
         }
 
-        public List<EventTriger> ReadFile()
+        public List<EventTrigger> ReadFile()
         {
-            List<EventTriger> result = new List<EventTriger>();
+            List<EventTrigger> result = new List<EventTrigger>();
             try
             {
                 // csvファイルを開く
@@ -35,7 +35,7 @@ namespace EruptRecorder.Jobs
                     while (!sr.EndOfStream)
                     {
                         var line = sr.ReadLine();
-                        EventTriger eventTriger = EventTriger.Parse(line);
+                        EventTrigger eventTriger = EventTrigger.Parse(line);
                         result.Add(eventTriger);
                     }
                 }

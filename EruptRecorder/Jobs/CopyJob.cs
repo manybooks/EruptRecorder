@@ -12,7 +12,7 @@ namespace EruptRecorder.Jobs
 {
     public class CopyJob
     {
-        public void Run(List<EventTriger> trigers, CopySetting copySetting, RecordingSetting recordingSetting, string logOutputPath)
+        public void Run(List<EventTrigger> trigers, CopySetting copySetting, RecordingSetting recordingSetting, string logOutputPath)
         {
             EruptLogging logging = new EruptLogging();
             var logger = logging.CreateLogger("CopyJobLogger", logOutputPath);
@@ -24,7 +24,7 @@ namespace EruptRecorder.Jobs
                 return;
             }
 
-            List<EventTriger> trigersToCheck = trigers.Where(triger => triger.timeStamp > recordingSetting.timeOfLastRun)
+            List<EventTrigger> trigersToCheck = trigers.Where(triger => triger.timeStamp > recordingSetting.timeOfLastRun)
                                                       .OrderBy(triger => triger.timeStamp)
                                                       .ToList();
             if (trigersToCheck?.Count() == 0)
@@ -54,12 +54,12 @@ namespace EruptRecorder.Jobs
         }
 
 
-        public List<CopyCondition> MergeTrigers(List<EventTriger> eventTrigers)
+        public List<CopyCondition> MergeTrigers(List<EventTrigger> eventTrigers)
         {
             return new List<CopyCondition>();
         }
 
-        public List<CopyCondition> GetCopyConditionsFrom(List<EventTriger> eventTrigers, int targetIndex, int minutesToGoBack)
+        public List<CopyCondition> GetCopyConditionsFrom(List<EventTrigger> eventTrigers, int targetIndex, int minutesToGoBack)
         {
             if (eventTrigers?.Count() < 1) throw new ArgumentException("対象となるトリガーがありませんでした。");
 
@@ -68,7 +68,7 @@ namespace EruptRecorder.Jobs
             DateTime currentTo = eventTrigers.FirstOrDefault().timeStamp;
             bool isActive = false;
 
-            foreach (EventTriger triger in eventTrigers)
+            foreach (EventTrigger triger in eventTrigers)
             {
                 if (isActive)
                 {
