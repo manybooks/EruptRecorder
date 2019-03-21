@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,8 @@ namespace EruptRecorder.Models
             DateTime timeStamp;
             int flag;
 
-            if (DateTime.TryParse(values[0], out timeStamp) && int.TryParse(values[1], out flag))
+            if (DateTime.TryParseExact(values[0], "yyyyMMddHHmmss", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out timeStamp) &&
+                int.TryParse(values[1], out flag))
             {
                 return new EventTrigger(timeStamp, flag);
             }
