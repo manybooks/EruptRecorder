@@ -11,12 +11,15 @@
         
         <Canvas>
             <Label Name="MinutesToGoBackLabel" Canvas.Top="10" Canvas.Left="40" Content="さかのぼり時間" FontSize="15"/>
-            <TextBox Name="MinutesToGoBack" Text="{Binding Path=minutesToGoBack}" FontSize="15" Canvas.Top="42" Canvas.Left="45" Width="60" Height="30"/>
+            <TextBox Name="MinutesToGoBack" Text="{Binding Path=minutesToGoBack}" FontSize="15" Canvas.Top="42" Canvas.Left="45" Width="60" Height="30" TextAlignment="Right" VerticalContentAlignment="Center"/>
             <Label Name="MinutesToGoBackMinutesLabel" Canvas.Top="40" Canvas.Left="105" Content="分" FontSize="15"/>
 
             <Label Name="IntervalMinutesToDetectLabel" Canvas.Top="10" Canvas.Left="180" Content="検出インターバル" FontSize="15"/>
-            <TextBox Name="IntervalMinutesToDetect" Text="{Binding Path=intervalMinutesToDetect}" FontSize="15" Canvas.Top="40" Canvas.Left="190" Width="60" Height="30"/>
+            <TextBox Name="IntervalMinutesToDetect" Text="{Binding Path=intervalMinutesToDetect}" FontSize="15" Canvas.Top="40" Canvas.Left="190" Width="60" Height="30" TextAlignment="Right" VerticalContentAlignment="Center"/>
             <Label Name="IntervalMinutesToDetectMinutesLabel" Canvas.Top="40" Canvas.Left="250" Content="分" FontSize="15"/>
+
+            <Label Name="TimeOfLastRunLabel" Canvas.Top="10" Canvas.Left="350" Content="最終検出時刻" FontSize="15"/>
+            <Label Name="TimeOfLastRun" Background="LightGray" Content="{Binding Path=timeOfLastRun, StringFormat=yyyy/MM/dd}" FontSize="15" Canvas.Top="40" Canvas.Left="350" Width="200" Height="30"/>
         </Canvas>
         
         <DataGrid x:Name="CopySettings" IsReadOnly="False" AutoGenerateColumns="False" Margin="40,120,20,200" MinRowHeight="20" CanUserAddRows="True">
