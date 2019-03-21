@@ -57,11 +57,17 @@ namespace EruptRecorder
             UpdateLogger();
             ReadTrigerJob readTrigerJob = new ReadTrigerJob(System.IO.Path.Combine(GetProjectRootDir().FullName, TRIGGER_FILE_NAME));
             List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(viewModel.recordingSetting.timeOfLastRun);
+
+            List<bool> jobResults = new List<bool>();
+            DateTime startCopyJobAt = DateTime.Now;
             foreach(CopySetting copySetting in viewModel.copySettings)
             {
                 CopyJob copyJob = new CopyJob(logger);
                 copyJob.Run(eventTriggers, copySetting, viewModel.recordingSetting, logger);
             }
+
+            // 最終検出時刻を更新
+            viewModel.recordingSetting.timeOfLastRun = startCopyJobAt;
         }
 
         public void UpdateLogger()
@@ -74,6 +80,7 @@ namespace EruptRecorder
         {
             UpdateLogger();
             logger.Info("OKボタンがクリックされました");
+            ExecuteCopy();
         }
 
         public void OnClickCancelButton(object sender, RoutedEventArgs e)
