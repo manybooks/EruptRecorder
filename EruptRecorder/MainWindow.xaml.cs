@@ -44,6 +44,7 @@ namespace EruptRecorder
                 this.MinutesToGoBack.DataContext = viewModel.recordingSetting;
                 this.IntervalMinutesToDetect.DataContext = viewModel.recordingSetting;
                 this.TimeOfLastRun.DataContext = viewModel.recordingSetting;
+                this.TriggerFilePath.DataContext = viewModel.recordingSetting;
                 this.CopySettings.ItemsSource = viewModel.copySettings;
                 this.CopySettings.DataContext = viewModel.copySettings;
                 this.LogOutputDir.DataContext = viewModel.loggingSetting;
