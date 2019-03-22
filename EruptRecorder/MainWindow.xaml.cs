@@ -33,20 +33,23 @@ namespace EruptRecorder
         DispatcherTimer timer;
         private const string SETTING_FILE_NAME = "settings.json";
         private const string TRIGGER_FILE_NAME = "trigger.csv";
-        public SettingsViewModel viewModel;
+        public SettingsViewModel ActiveViewModel;
+        public SettingsViewModel BindingViewModel;
 
         public MainWindow()
         {
             try
             {
                 InitializeComponent();
-                viewModel = LoadSettings();
-                this.MinutesToGoBack.DataContext = viewModel.recordingSetting;
-                this.IntervalMinutesToDetect.DataContext = viewModel.recordingSetting;
-                this.TimeOfLastRun.DataContext = viewModel.recordingSetting;
-                this.CopySettings.ItemsSource = viewModel.copySettings;
-                this.CopySettings.DataContext = viewModel.copySettings;
-                this.LogOutputDir.DataContext = viewModel.loggingSetting;
+                ActiveViewModel = LoadSettings();
+                BindingViewModel = LoadSettings();
+
+                this.MinutesToGoBack.DataContext = BindingViewModel.recordingSetting;
+                this.IntervalMinutesToDetect.DataContext = BindingViewModel.recordingSetting;
+                this.TimeOfLastRun.DataContext = BindingViewModel.recordingSetting;
+                this.CopySettings.ItemsSource = BindingViewModel.copySettings;
+                this.CopySettings.DataContext = BindingViewModel.copySettings;
+                this.LogOutputDir.DataContext = BindingViewModel.loggingSetting;
 
                 UpdateLogger();
                 logger.Info("システムを起動しました。");
@@ -57,7 +60,7 @@ namespace EruptRecorder
             finally
             {
                 // 異常終了しても設定を失わないように
-                SaveSettings();
+                FinalizeProcess();
             }
         }
 
@@ -65,7 +68,7 @@ namespace EruptRecorder
         {
             timer = new DispatcherTimer(DispatcherPriority.Normal)
             {
-                Interval = TimeSpan.FromMinutes(viewModel.recordingSetting.intervalMinutesToDetect)
+                Interval = TimeSpan.FromMinutes(ActiveViewModel.recordingSetting.intervalMinutesToDetect)
             };
 
             timer.Tick += (s, e) =>
@@ -82,46 +85,59 @@ namespace EruptRecorder
 
         public void UpdateInterval()
         {
-            timer.Interval = TimeSpan.FromMinutes(viewModel.recordingSetting.intervalMinutesToDetect);
+            timer.Interval = TimeSpan.FromMinutes(ActiveViewModel.recordingSetting.intervalMinutesToDetect);
         }
 
         public void ExecuteCopy()
         {
             UpdateLogger();
             ReadTrigerJob readTrigerJob = new ReadTrigerJob(System.IO.Path.Combine(GetProjectRootDir().FullName, TRIGGER_FILE_NAME), logger);
-            List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(viewModel.recordingSetting.timeOfLastRun);
+            List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(ActiveViewModel.recordingSetting.timeOfLastRun);
 
             List<bool> jobResults = new List<bool>();
             DateTime startCopyJobAt = DateTime.Now;
-            foreach(CopySetting copySetting in viewModel.copySettings)
+            foreach(CopySetting copySetting in ActiveViewModel.copySettings)
             {
                 CopyJob copyJob = new CopyJob(logger);
-                copyJob.Run(eventTriggers, copySetting, viewModel.recordingSetting, logger);
+                copyJob.Run(eventTriggers, copySetting, ActiveViewModel.recordingSetting, logger);
             }
 
             // 最終検出時刻を更新
-            viewModel.recordingSetting.timeOfLastRun = startCopyJobAt;
+            ActiveViewModel.recordingSetting.timeOfLastRun = startCopyJobAt;
+            BindingViewModel.recordingSetting.timeOfLastRun = startCopyJobAt;
         }
 
         public void UpdateLogger()
         {
             // 最新のログ出力フォルダを反映
-            logger = EruptLogging.CreateLogger("EruptRecorderLogger", viewModel.loggingSetting.logOutputDir);
+            logger = EruptLogging.CreateLogger("EruptRecorderLogger", ActiveViewModel.loggingSetting.logOutputDir);
         }
 
         public void OnClickOkButton(object sender, RoutedEventArgs e)
         {
-            UpdateLogger();
+            // TODO あとで消す
             logger.Info("OKボタンがクリックされました");
-            ExecuteCopy();
+            ActiveViewModel = BindingViewModel;
         }
 
         public void OnClickCancelButton(object sender, RoutedEventArgs e)
         {
+            // TODO あとで消す
             Console.WriteLine("キャンセルボタンがクリックされました");
+            BindingViewModel = ActiveViewModel;
         }
 
         public void OnClosingWindow(object sender, CancelEventArgs e)
+        {
+            // TODO 余裕があれば終了確認をする
+        }
+
+        public void OnClosed(object sender, EventArgs e)
+        {
+            FinalizeProcess();
+        }
+
+        public void FinalizeProcess()
         {
             try
             {
@@ -158,9 +174,9 @@ namespace EruptRecorder
 
         public void SaveSettings()
         {
-            if (!this.viewModel.IsValid()) return;
+            if (!this.ActiveViewModel.IsValid()) return;
             string settingFilePath = GetSettingFilePath();
-            File.WriteAllText(settingFilePath, JsonConvert.SerializeObject(viewModel));
+            File.WriteAllText(settingFilePath, JsonConvert.SerializeObject(ActiveViewModel));
         }
     }
 }
