@@ -37,14 +37,8 @@ namespace EruptRecorder.Settings
         public string prefix { get; set; }
         public string fileExtension { get; set; }
 
-        public CopySetting(bool isActive, int index, string srcDir, string destDir, string prefix, string fileExtension)
+        public CopySetting()
         {
-            this.isActive = isActive;
-            this.index = index;
-            this.srcDir = srcDir;
-            this.destDir = destDir;
-            this.prefix = prefix;
-            this.fileExtension = fileExtension;
         }
     }
 
