@@ -4,4 +4,4 @@ bin/
 packages/
 logs/
 settings.json
-trigger.csv
+trigger*.csv
