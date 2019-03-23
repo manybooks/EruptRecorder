@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using EruptRecorder.Settings;
 using EruptRecorder.Logging;
 using EruptRecorder.Jobs;
@@ -136,6 +137,73 @@ namespace EruptRecorder
             }
         }
 
+        public void OnSrcDirColumn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // 選択された行を特定
+            TextBlock selected = sender as TextBlock;
+            var selectedRow = selected.DataContext as CopySetting;
+
+            var selectFromExplorer = MessageBox.Show("エクスプローラーからコピー元フォルダを選択しますか？", "編集方法選択", MessageBoxButton.YesNo, MessageBoxImage.Information);
+            // エクスプローラーから選択する
+            if (selectFromExplorer == MessageBoxResult.Yes)
+            {
+                var dialog = new CommonOpenFileDialog("コピー元フォルダ選択");
+
+                // フォルダ選択モード。
+                dialog.IsFolderPicker = true;
+                var ret = dialog.ShowDialog();
+                if (ret != CommonFileDialogResult.Ok)
+                {
+                    return;
+                }
+
+                selectedRow.srcDir = dialog.FileName;
+            }
+            // テキストで入力する
+            else
+            {
+                string inputPath = Microsoft.VisualBasic.Interaction.InputBox("コピー元フォルダを設定してください。", "テキスト入力");
+                if(!string.IsNullOrEmpty(inputPath))
+                {
+                    selectedRow.srcDir = inputPath;
+                }
+            }
+        }
+
+        public void OnDestDirColumn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // 選択された行を特定
+            TextBlock selected = sender as TextBlock;
+            var selectedRow = selected.DataContext as CopySetting;
+
+            var selectFromExplorer = MessageBox.Show("エクスプローラーからコピー先フォルダを選択しますか？", "編集方法選択", MessageBoxButton.YesNo, MessageBoxImage.Information);
+            // エクスプローラーから選択する
+            if (selectFromExplorer == MessageBoxResult.Yes)
+            {
+                var dialog = new CommonOpenFileDialog("コピー先フォルダ選択");
+
+                // フォルダ選択モード。
+                dialog.IsFolderPicker = true;
+                var ret = dialog.ShowDialog();
+                if (ret != CommonFileDialogResult.Ok)
+                {
+                    return;
+                }
+
+                selectedRow.destDir = dialog.FileName;
+            }
+            // テキストで入力する
+            else
+            {
+                string inputPath = Microsoft.VisualBasic.Interaction.InputBox("コピー先フォルダを設定してください。", "テキスト入力");
+                if (!string.IsNullOrEmpty(inputPath))
+                {
+                    selectedRow.destDir = inputPath;
+                }
+            }
+        }
+
+
         private DirectoryInfo GetProjectRootDir()
         {
             string currentDir = Directory.GetCurrentDirectory();
@@ -163,5 +231,6 @@ namespace EruptRecorder
             string settingFilePath = GetSettingFilePath();
             File.WriteAllText(settingFilePath, JsonConvert.SerializeObject(viewModel));
         }
+
     }
 }

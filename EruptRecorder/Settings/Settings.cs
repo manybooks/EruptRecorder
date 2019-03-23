@@ -28,12 +28,51 @@ namespace EruptRecorder.Settings
         }
     }
 
-    public class CopySetting
+    public class CopySetting : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
         public bool isActive { get; set; }
         public int index { get; set; }
-        public string srcDir { get; set; }
-        public string destDir { get; set; }
+        private string _srcDir;
+        public string srcDir
+        {
+            get
+            {
+                return this._srcDir;
+            }
+            set
+            {
+                if (value != this._srcDir)
+                {
+                    this._srcDir = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private string _destDir;
+        public string destDir
+        {
+            get
+            {
+                return this._destDir;
+            }
+            set
+            {
+                if (value != this._destDir)
+                {
+                    this._destDir = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
         public string prefix { get; set; }
         public string fileExtension { get; set; }
 

@@ -31,8 +31,34 @@
                 <DataGridTextColumn Binding="{Binding Path=index}" Width="30" Header="INX"/>
                 <DataGridTextColumn Binding="{Binding Path=prefix}" Width="80" Header="Prefix"/>
                 <DataGridTextColumn Binding="{Binding Path=fileExtension}" Width="50" Header="拡張子"/>
+                <!--
                 <DataGridTextColumn Binding="{Binding Path=destDir}" Width="*" Header="コピー先"/>
                 <DataGridTextColumn Binding="{Binding Path=srcDir}" Width="*" Header="コピー元"/>
+                -->
+                <DataGridTemplateColumn x:Name="SrcDirColumn" Width="*" Header="コピー元フォルダ">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Mouse.MouseDown="OnSrcDirColumn_MouseDown">
+                                <TextBlock.Text>
+                                    <Binding Mode="TwoWay" Path="srcDir"></Binding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn x:Name="DestDirColumn" Width="*" Header="コピー先フォルダ">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Mouse.MouseDown="OnDestDirColumn_MouseDown">
+                                <TextBlock.Text>
+                                    <Binding Mode="TwoWay" Path="destDir"></Binding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
             </DataGrid.Columns>
         </DataGrid>
 
