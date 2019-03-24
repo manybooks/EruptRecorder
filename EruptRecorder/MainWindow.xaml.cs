@@ -56,10 +56,13 @@ namespace EruptRecorder
                 // ジョブの起動
                 StartJob();
             }
-            finally
+            catch(Exception ex)
             {
+                logger.Error("起動時に予期せぬエラーが発生しました。");
+                logger.Error(ex.Message);
                 // 異常終了しても設定を失わないように
-                SaveSettings();
+                FinalizeProcess();
+                this.Close();
             }
         }
 
@@ -125,10 +128,20 @@ namespace EruptRecorder
 
         public void OnClosingWindow(object sender, CancelEventArgs e)
         {
+            // 余裕があれば終了確認する
+        }
+
+        public void OnClosed(object sender, EventArgs e)
+        {
+            FinalizeProcess();
+        }
+
+        public void FinalizeProcess()
+        {
             try
             {
                 SaveSettings();
-                logger.Info("システムを正常に終了しました。");
+                logger.Info("各種設定情報を保存しました。");
             }
             catch (Exception ex)
             {
