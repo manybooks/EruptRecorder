@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using EruptRecorder.Models;
@@ -28,10 +29,10 @@ namespace EruptRecorder.Jobs
         {
             List<EventTrigger> result = new List<EventTrigger>();
 
-            // csvファイルを開く
-            using (var sr = new System.IO.StreamReader($"{inputFilePath}"))
+            try
             {
-                try
+                // csvファイルを開く
+                using (var sr = new System.IO.StreamReader($"{inputFilePath}"))
                 {
                     // ヘッダ行を飛ばす
                     sr.ReadLine();
@@ -41,24 +42,25 @@ namespace EruptRecorder.Jobs
                     {
                         var line = sr.ReadLine();
                         EventTrigger eventTriger = EventTrigger.Parse(line);
-                        
+
                         result.Add(eventTriger);
                     }
                 }
-                catch (FormatException fe)
-                {
-                    // 入力ファイルの形式が不正だったとき
-                    logger.Error($"{fe.Message}");
-                }
-                catch (System.Exception e)
-                {
-                    // ファイルを開くのに失敗したとき
-                    logger.Error(e.Message);
-                }
-                finally
-                {
-                    sr.Close();
-                }
+            }
+            catch (FileNotFoundException)
+            {
+                // 入力ファイルが存在しなかったとき
+                logger.Error($"トリガーファイルとして指定された{inputFilePath}が存在しません。");
+            }
+            catch (FormatException fe)
+            {
+                // 入力ファイルの形式が不正だったとき
+                logger.Error($"{fe.Message}");
+            }
+            catch (System.Exception e)
+            {
+                // その他想定していない例外
+                logger.Error(e.Message);
             }
             return result;
         }
