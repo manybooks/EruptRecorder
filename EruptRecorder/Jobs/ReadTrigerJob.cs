@@ -38,12 +38,9 @@ namespace EruptRecorder.Jobs
 
             try
             {
-                // csvファイルを開く
+                // トリガーファイルを開く
                 using (var sr = new System.IO.StreamReader($"{inputFilePath}"))
                 {
-                    // ヘッダ行を飛ばす
-                    sr.ReadLine();
-
                     // ストリームの末尾まで繰り返す
                     while (!sr.EndOfStream)
                     {
