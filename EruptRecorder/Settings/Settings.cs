@@ -26,6 +26,36 @@ namespace EruptRecorder.Settings
         public SettingsViewModel()
         {
         }
+
+        public static SettingsViewModel DefaultSettings()
+        {
+            return new SettingsViewModel()
+            {
+                copySettings = new ObservableCollection<CopySetting>()
+                {
+                    new CopySetting()
+                    {
+                        isActive = false,
+                        index = 1,
+                        fileExtension = "bmp",
+                        prefix = "",
+                        srcDir = "",
+                        destDir = ""
+                    }
+                },
+                recordingSetting = new RecordingSetting()
+                {
+                    minutesToGoBack = 10,
+                    intervalMinutesToDetect = 1,
+                    timeOfLastRun = new DateTime(),
+                    triggerFilePath = "echoindex.dat"
+                },
+                loggingSetting = new LoggingSetting()
+                {
+                    logOutputDir = ""
+                }
+            };
+        }
     }
 
     public class CopySetting : INotifyPropertyChanged
@@ -112,9 +142,8 @@ namespace EruptRecorder.Settings
             }
         }
 
-        public RecordingSetting(int minutesToGoBack)
+        public RecordingSetting()
         {
-            this.minutesToGoBack = minutesToGoBack;
         }
     }
 
@@ -122,9 +151,8 @@ namespace EruptRecorder.Settings
     {
         public string logOutputDir { get; set; }
 
-        public LoggingSetting(string logOutputDir)
+        public LoggingSetting()
         {
-            this.logOutputDir = logOutputDir;
         }
     }
 }

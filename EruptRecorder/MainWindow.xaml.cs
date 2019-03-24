@@ -111,7 +111,7 @@ namespace EruptRecorder
         public void UpdateLogger()
         {
             // 最新のログ出力フォルダを反映
-            logger = EruptLogging.CreateLogger("EruptRecorderLogger", viewModel.loggingSetting.logOutputDir);
+            logger = EruptLogging.CreateLogger("EruptRecorderLogger", viewModel?.loggingSetting?.logOutputDir);
         }
 
         public void OnClickOkButton(object sender, RoutedEventArgs e)
@@ -233,9 +233,18 @@ namespace EruptRecorder
 
         public SettingsViewModel LoadSettings()
         {
-            string settingFilePath = GetSettingFilePath();
-            string settingJson = File.ReadAllText(settingFilePath);
-            return JsonConvert.DeserializeObject<SettingsViewModel>(settingJson);
+            try
+            {
+                string settingFilePath = GetSettingFilePath();
+                string settingJson = File.ReadAllText(settingFilePath);
+                return JsonConvert.DeserializeObject<SettingsViewModel>(settingJson);
+            }
+            catch(FileNotFoundException)
+            {
+                UpdateLogger();
+                logger.Error("設定情報を格納したファイルが見つかりませんでした。システム開発者に連絡してください。");
+                return SettingsViewModel.DefaultSettings();
+            }
         }
 
         public void SaveSettings()
