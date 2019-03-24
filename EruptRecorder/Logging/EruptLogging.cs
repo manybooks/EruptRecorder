@@ -16,6 +16,12 @@ namespace EruptRecorder.Logging
             // Loggerの生成
             var logger = LogManager.GetLogger(loggerName);
 
+            // ログ出力場所が指定されなかった場合は、デフォルトのまま返却する
+            if (string.IsNullOrEmpty(logOutputDir))
+            {
+                return logger;
+            }
+
             // RootのLoggerを取得
             var rootLogger = ((Hierarchy)logger.Logger.Repository).Root;
 
