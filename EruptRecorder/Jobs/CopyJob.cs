@@ -34,7 +34,8 @@ namespace EruptRecorder.Jobs
             List<FileInfo> filesToCopy = GetCopyTargetFiles(copyConditions, copySetting);
             if (filesToCopy?.Count() == 0)
             {
-                logger.Warn($"コピー元のディレクトリ{copySetting.srcDir}に条件を満たすファイルが見つかりませんでした。");
+                string prefixCondition = (string.IsNullOrEmpty(copySetting.prefix)) ? string.Empty : $"名前が'{copySetting.prefix}'で始まり、";
+                logger.Warn($"コピー元のディレクトリ{copySetting.srcDir}に、{prefixCondition}拡張子が'{copySetting.fileExtension}'のファイルが見つかりませんでした。");
                 return;
             }
 
