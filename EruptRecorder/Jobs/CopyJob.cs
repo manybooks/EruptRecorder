@@ -52,21 +52,21 @@ namespace EruptRecorder.Jobs
             return new List<CopyCondition>();
         }
 
-        public List<CopyCondition> GetCopyConditionsFrom(List<EventTrigger> eventTrigers, int targetIndex, int minutesToGoBack)
+        public List<CopyCondition> GetCopyConditionsFrom(List<EventTrigger> eventTriggers, int targetIndex, int minutesToGoBack)
         {
-            if (eventTrigers?.Count() < 1) throw new ArgumentException("対象となるトリガーがありませんでした。");
+            if (eventTriggers?.Count() < 1) throw new ArgumentException("対象となるトリガーがありませんでした。");
 
             List<CopyCondition> copyConditions = new List<CopyCondition>();
             CopyCondition currentCondition = new CopyCondition();
-            DateTime currentTo = eventTrigers.FirstOrDefault().timeStamp;
+            DateTime currentTo = eventTriggers.FirstOrDefault().timeStamp;
             bool isActive = false;
 
-            foreach (EventTrigger triger in eventTrigers)
+            foreach (EventTrigger trigger in eventTriggers)
             {
                 if (isActive)
                 {
                     // Deactivate開始
-                    if (triger.flag != targetIndex)
+                    if (trigger.flag != targetIndex)
                     {
                         currentCondition.to = currentTo;
                         copyConditions.Add(currentCondition);
@@ -79,17 +79,17 @@ namespace EruptRecorder.Jobs
                 else
                 {
                     // Activate開始
-                    if (triger.flag == targetIndex)
+                    if (trigger.flag == targetIndex)
                     {
                         isActive = true;
-                        currentCondition.from = triger.timeStamp.AddMinutes(-1 * minutesToGoBack);
+                        currentCondition.from = trigger.timeStamp.AddMinutes(-1 * minutesToGoBack);
                     }
                 }
 
-                if (triger.flag == targetIndex)
+                if (trigger.flag == targetIndex)
                 {
                     // Deactivate時に設定する遡り終了時刻を設定
-                    currentTo = triger.timeStamp;
+                    currentTo = trigger.timeStamp;
                 }
             }
 
