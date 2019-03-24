@@ -95,8 +95,8 @@ namespace EruptRecorder.Settings
         public int minutesToGoBack { get; set; } = 1;
         public int intervalMinutesToDetect { get; set; } = 1;
         public string triggerFilePath { get; set; }
-        private DateTime _timeOfLastRun;
-        public DateTime timeOfLastRun
+        private DateTime? _timeOfLastRun;
+        public DateTime? timeOfLastRun
         {
             get
             {

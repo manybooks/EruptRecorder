@@ -19,13 +19,20 @@ namespace EruptRecorder.Jobs
             this.logger = logger;
         }
 
-        public List<EventTrigger> Run(DateTime timeOfLastRun)
+        public List<EventTrigger> Run(DateTime? timeOfLastRun)
         {
-            List<EventTrigger> trigers = ReadTriggerFile(timeOfLastRun);
-            return trigers.Where(trigger => trigger.timeStamp >= timeOfLastRun).ToList();
+            // 最終検出時刻がnullだった場合はDateTimeの初期値を使用
+            if (timeOfLastRun == null)
+            {
+                timeOfLastRun = new DateTime();
+            }
+
+            List<EventTrigger> triggers = ReadTriggerFile();
+            List<EventTrigger> addedTriggersFromLastRun = triggers.Where(trigger => trigger.timeStamp >= timeOfLastRun).ToList();
+            return addedTriggersFromLastRun;
         }
 
-        public List<EventTrigger> ReadTriggerFile(DateTime timeOfLastRun)
+        public List<EventTrigger> ReadTriggerFile()
         {
             List<EventTrigger> result = new List<EventTrigger>();
 

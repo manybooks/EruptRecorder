@@ -25,11 +25,10 @@ namespace EruptRecorder.Jobs
             if (!copySetting.isActive) return;
             if (trigers == null || trigers?.Count() == 0)
             {
-                logger.Info($"最後にジョブを起動した{recordingSetting.timeOfLastRun}から現在までで、インデックス{copySetting.index}のコピーを要求する入力データはありませんでした。");
+                logger.Info($"最後にジョブを起動した時刻{recordingSetting.timeOfLastRun}から現在までで、インデックス{copySetting.index}のコピーを要求する入力データはありませんでした。");
                 return;
             }
-            List<EventTrigger> trigersToCheck = trigers.Where(triger => triger.timeStamp > recordingSetting.timeOfLastRun)
-                                                       .OrderBy(triger => triger.timeStamp)
+            List<EventTrigger> trigersToCheck = trigers.OrderBy(triger => triger.timeStamp)
                                                        .ToList();
             List<CopyCondition> copyConditions = GetCopyConditionsFrom(trigersToCheck, copySetting.index, recordingSetting.minutesToGoBack);
             List<FileInfo> filesToCopy = GetCopyTargetFiles(copyConditions, copySetting);
