@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EruptRecorder"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800" Background="LightGray"
+        Title="設定" Height="500" Width="800" Background="LightGray"
         Closing="OnClosingWindow">
     <Grid>
         
