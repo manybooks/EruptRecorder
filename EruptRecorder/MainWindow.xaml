@@ -24,6 +24,8 @@
 
             <Label Name="TriggerFilePathLabel" Canvas.Top="10" Canvas.Left="350" Content="トリガーファイル名" FontSize="15"/>
             <TextBox Name="TriggerFilePath" Text="{Binding Path=triggerFilePath}" FontSize="15" Canvas.Top="40" Canvas.Left="350" Width="400" Height="30" VerticalContentAlignment="Center"/>
+
+            <Label Name="CopySettingsLabel" Canvas.Left="40" Canvas.Top="90" Content="コピー設定" FontSize="15"/>
         </Canvas>
         
         <DataGrid Name="CopySettings" IsReadOnly="False" AutoGenerateColumns="False" Margin="40,120,20,200" MinRowHeight="20" CanUserAddRows="True" CanUserDeleteRows="True">
