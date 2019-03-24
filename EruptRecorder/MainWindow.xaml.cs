@@ -224,19 +224,11 @@ namespace EruptRecorder
             return projectRootDir;
         }
 
-        private string GetSettingFilePath()
-        {
-            var projectRootDir = GetProjectRootDir();
-            var settingFilePath = System.IO.Path.Combine(projectRootDir.FullName, SETTING_FILE_NAME);
-            return settingFilePath;
-        }
-
         public SettingsViewModel LoadSettings()
         {
             try
             {
-                string settingFilePath = GetSettingFilePath();
-                string settingJson = File.ReadAllText(settingFilePath);
+                string settingJson = File.ReadAllText(SETTING_FILE_NAME);
                 return JsonConvert.DeserializeObject<SettingsViewModel>(settingJson);
             }
             catch(FileNotFoundException)
@@ -250,8 +242,7 @@ namespace EruptRecorder
         public void SaveSettings()
         {
             if (!this.viewModel.IsValid()) return;
-            string settingFilePath = GetSettingFilePath();
-            File.WriteAllText(settingFilePath, JsonConvert.SerializeObject(viewModel));
+            File.WriteAllText(SETTING_FILE_NAME, JsonConvert.SerializeObject(viewModel));
         }
 
     }
