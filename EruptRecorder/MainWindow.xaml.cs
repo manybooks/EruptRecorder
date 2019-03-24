@@ -134,6 +134,7 @@ namespace EruptRecorder
         public void OnClosed(object sender, EventArgs e)
         {
             FinalizeProcess();
+            logger.Info("システムを終了します。");
         }
 
         public void FinalizeProcess()
