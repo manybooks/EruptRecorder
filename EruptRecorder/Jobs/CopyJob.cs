@@ -89,7 +89,7 @@ namespace EruptRecorder.Jobs
                 if (trigger.flag == targetIndex)
                 {
                     // Deactivate時に設定する遡り終了時刻を設定
-                    currentTo = trigger.timeStamp.AddMinutes(1); // DateTime型だとミリ秒考慮ができず、最新のファイルがコピーされないため、1分加算する
+                    currentTo = trigger.timeStamp.AddSeconds(1); // DateTime型だとミリ秒考慮ができず、最新のファイルがコピーされない可能性があるため、1秒加算する
                 }
             }
 
