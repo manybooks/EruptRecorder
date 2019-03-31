@@ -122,9 +122,54 @@ namespace EruptRecorder.Settings
             }
         }
 
-        public int minutesToGoBack { get; set; } = 1;
-        public int intervalMinutesToDetect { get; set; } = 1;
-        public string triggerFilePath { get; set; }
+        public int _minutesToGoBack;
+        public int minutesToGoBack
+        {
+            get
+            {
+                return this._minutesToGoBack;
+            }
+            set
+            {
+                if (value != this._minutesToGoBack)
+                {
+                    this._minutesToGoBack = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public int _intervalMinutesToDetect;
+        public int intervalMinutesToDetect
+        {
+            get
+            {
+                return this._intervalMinutesToDetect;
+            }
+            set
+            {
+                if (value != this._intervalMinutesToDetect)
+                {
+                    this._intervalMinutesToDetect = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public string _triggerFilePath;
+        public string triggerFilePath
+        {
+            get
+            {
+                return this._triggerFilePath;
+            }
+            set
+            {
+                if (value != this._triggerFilePath)
+                {
+                    this._triggerFilePath = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
         private DateTime? _timeOfLastRun;
         public DateTime? timeOfLastRun
         {
@@ -147,9 +192,33 @@ namespace EruptRecorder.Settings
         }
     }
 
-    public class LoggingSetting
+    public class LoggingSetting : INotifyPropertyChanged
     {
-        public string logOutputDir { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public string _logOutputDir;
+        public string logOutputDir
+        {
+            get
+            {
+                return this._logOutputDir;
+            }
+            set
+            {
+                if (value != this._logOutputDir)
+                {
+                    this._logOutputDir = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
 
         public LoggingSetting()
         {
