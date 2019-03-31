@@ -92,8 +92,70 @@ namespace EruptRecorder.Settings
             }
         }
 
-        public bool isActive { get; set; }
-        public int index { get; set; }
+        public bool _isActive;
+        public bool isActive
+        {
+            get
+            {
+                return this._isActive;
+            }
+            set
+            {
+                if (value != this._isActive)
+                {
+                    this._isActive = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public int _index;
+        public int index
+        {
+            get
+            {
+                return this._index;
+            }
+            set
+            {
+                if (value != this._index)
+                {
+                    this._index = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public string _prefix;
+        public string prefix
+        {
+            get
+            {
+                return this._prefix;
+            }
+            set
+            {
+                if (value != this._prefix)
+                {
+                    this._prefix = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public string _fileExtension;
+        public string fileExtension
+        {
+            get
+            {
+                return this._fileExtension;
+            }
+            set
+            {
+                if (value != this._fileExtension)
+                {
+                    this._fileExtension = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
         private string _srcDir;
         public string srcDir
         {
@@ -126,8 +188,6 @@ namespace EruptRecorder.Settings
                 }
             }
         }
-        public string prefix { get; set; }
-        public string fileExtension { get; set; }
 
         public CopySetting()
         {
