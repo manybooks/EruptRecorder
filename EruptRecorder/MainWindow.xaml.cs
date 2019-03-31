@@ -129,6 +129,7 @@ namespace EruptRecorder
             ActiveViewModel.ReflectTheValueOf(BindingViewModel);
             MessageBox.Show("編集内容を反映しました。");
             SaveSettings();
+            UpdateLogger();
         }
 
         public void OnClickCancelButton(object sender, RoutedEventArgs e)
