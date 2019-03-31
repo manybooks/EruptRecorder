@@ -34,21 +34,24 @@ namespace EruptRecorder
         DispatcherTimer timer;
         private const string SETTING_FILE_NAME = "settings.json";
         private const string TRIGGER_FILE_NAME = "trigger.csv";
-        public SettingsViewModel viewModel;
+        public SettingsViewModel ActiveViewModel;  // コピージョブの実行時に実際に参照される各種設定の値。キャンセルボタンが押された際は、UIの値をこの値に戻す。
+        public SettingsViewModel BindingViewModel; // ユーザーから見える画面上の各種設定の値。OKボタンを押されるまではジョブの結果に影響しない。
 
         public MainWindow()
         {
             try
             {
                 InitializeComponent();
-                viewModel = LoadSettings();
-                this.MinutesToGoBack.DataContext = viewModel.recordingSetting;
-                this.IntervalMinutesToDetect.DataContext = viewModel.recordingSetting;
-                this.TimeOfLastRun.DataContext = viewModel.recordingSetting;
-                this.TriggerFilePath.DataContext = viewModel.recordingSetting;
-                this.CopySettings.ItemsSource = viewModel.copySettings;
-                this.CopySettings.DataContext = viewModel.copySettings;
-                this.LogOutputDir.DataContext = viewModel.loggingSetting;
+                ActiveViewModel = LoadSettings();
+                BindingViewModel = LoadSettings();
+
+                this.MinutesToGoBack.DataContext = BindingViewModel.recordingSetting;
+                this.IntervalMinutesToDetect.DataContext = BindingViewModel.recordingSetting;
+                this.TimeOfLastRun.DataContext = BindingViewModel.recordingSetting;
+                this.TriggerFilePath.DataContext = BindingViewModel.recordingSetting;
+                this.CopySettings.ItemsSource = BindingViewModel.copySettings;
+                this.CopySettings.DataContext = BindingViewModel.copySettings;
+                this.LogOutputDir.DataContext = BindingViewModel.loggingSetting;
 
                 UpdateLogger();
                 logger.Info("システムを起動しました。");
@@ -70,7 +73,7 @@ namespace EruptRecorder
         {
             timer = new DispatcherTimer(DispatcherPriority.Normal)
             {
-                Interval = TimeSpan.FromMinutes(viewModel.recordingSetting.intervalMinutesToDetect)
+                Interval = TimeSpan.FromMinutes(ActiveViewModel.recordingSetting.intervalMinutesToDetect)
             };
 
             timer.Tick += (s, e) =>
@@ -87,43 +90,61 @@ namespace EruptRecorder
 
         public void UpdateInterval()
         {
-            timer.Interval = TimeSpan.FromMinutes(viewModel.recordingSetting.intervalMinutesToDetect);
+            timer.Interval = TimeSpan.FromMinutes(ActiveViewModel.recordingSetting.intervalMinutesToDetect);
         }
 
         public void ExecuteCopy()
         {
             UpdateLogger();
-            ReadTrigerJob readTrigerJob = new ReadTrigerJob(viewModel.recordingSetting.triggerFilePath, logger);
-            List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(viewModel.recordingSetting.timeOfLastRun);
+            ReadTrigerJob readTrigerJob = new ReadTrigerJob(ActiveViewModel.recordingSetting.triggerFilePath, logger);
+            List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(ActiveViewModel.recordingSetting.timeOfLastRun);
 
             List<bool> jobResults = new List<bool>();
             DateTime startCopyJobAt = DateTime.Now;
-            foreach(CopySetting copySetting in viewModel.copySettings)
+            foreach(CopySetting copySetting in ActiveViewModel.copySettings)
             {
                 CopyJob copyJob = new CopyJob(logger);
-                copyJob.Run(eventTriggers, copySetting, viewModel.recordingSetting, logger);
+                copyJob.Run(eventTriggers, copySetting, ActiveViewModel.recordingSetting, logger);
             }
 
             // 最終検出時刻を更新
-            viewModel.recordingSetting.timeOfLastRun = startCopyJobAt;
+            UpdateTimeOfLastRun(startCopyJobAt);
+        }
+
+        public void UpdateTimeOfLastRun(DateTime startCopyJobAt)
+        {
+            ActiveViewModel.recordingSetting.timeOfLastRun = startCopyJobAt;
+            BindingViewModel.recordingSetting.timeOfLastRun = startCopyJobAt;
         }
 
         public void UpdateLogger()
         {
             // 最新のログ出力フォルダを反映
-            logger = EruptLogging.CreateLogger("EruptRecorderLogger", viewModel?.loggingSetting?.logOutputDir);
+            logger = EruptLogging.CreateLogger("EruptRecorderLogger", ActiveViewModel?.loggingSetting?.logOutputDir);
         }
 
         public void OnClickOkButton(object sender, RoutedEventArgs e)
         {
-            UpdateLogger();
             logger.Info("OKボタンがクリックされました");
-            ExecuteCopy();
+            var okButtonResult = MessageBox.Show("各種設定の編集を反映しますか？", "確認", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (okButtonResult == MessageBoxResult.Yes)
+            {
+                // 現在の画面上の設定をアクティブな設定に反映させる
+                ActiveViewModel.ReflectTheValueOf(BindingViewModel);
+                MessageBox.Show("編集結果を反映しました。");
+            }
         }
 
         public void OnClickCancelButton(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("キャンセルボタンがクリックされました");
+            logger.Info("キャンセルボタンがクリックされました");
+            var cancelButtonResult = MessageBox.Show("各種設定を元に戻しますか？", "確認", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (cancelButtonResult == MessageBoxResult.Yes)
+            {
+                // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
+                BindingViewModel.ReflectTheValueOf(ActiveViewModel);
+                MessageBox.Show("各種設定を元に戻しました。");
+            }
         }
 
         public void OnClosingWindow(object sender, CancelEventArgs e)
@@ -242,8 +263,8 @@ namespace EruptRecorder
 
         public void SaveSettings()
         {
-            if (!this.viewModel.IsValid()) return;
-            File.WriteAllText(SETTING_FILE_NAME, JsonConvert.SerializeObject(viewModel));
+            if (!this.ActiveViewModel.IsValid()) return;
+            File.WriteAllText(SETTING_FILE_NAME, JsonConvert.SerializeObject(ActiveViewModel));
         }
 
     }

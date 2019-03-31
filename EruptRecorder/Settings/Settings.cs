@@ -56,6 +56,29 @@ namespace EruptRecorder.Settings
                 }
             };
         }
+
+        public void ReflectTheValueOf(SettingsViewModel another)
+        {
+            this.recordingSetting.intervalMinutesToDetect = another.recordingSetting.intervalMinutesToDetect;
+            this.recordingSetting.minutesToGoBack = another.recordingSetting.minutesToGoBack;
+            this.recordingSetting.triggerFilePath = another.recordingSetting.triggerFilePath;
+
+            this.loggingSetting.logOutputDir = another.loggingSetting.logOutputDir;
+
+            this.copySettings = new ObservableCollection<CopySetting>();
+            for (int i = 0; i < another.copySettings.Count(); i++)
+            {
+                CopySetting newOne = new CopySetting();
+                this.copySettings.Add(newOne);
+
+                this.copySettings[i].isActive = another.copySettings[i].isActive;
+                this.copySettings[i].index = another.copySettings[i].index;
+                this.copySettings[i].prefix = another.copySettings[i].prefix;
+                this.copySettings[i].fileExtension = another.copySettings[i].fileExtension;
+                this.copySettings[i].srcDir = another.copySettings[i].srcDir;
+                this.copySettings[i].destDir = another.copySettings[i].destDir;
+            }
+        }
     }
 
     public class CopySetting : INotifyPropertyChanged
