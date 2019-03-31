@@ -49,7 +49,6 @@ namespace EruptRecorder
                 this.IntervalMinutesToDetect.DataContext = BindingViewModel.recordingSetting;
                 this.TimeOfLastRun.DataContext = BindingViewModel.recordingSetting;
                 this.TriggerFilePath.DataContext = BindingViewModel.recordingSetting;
-                this.CopySettings.ItemsSource = BindingViewModel.copySettings;
                 this.CopySettings.DataContext = BindingViewModel.copySettings;
                 this.LogOutputDir.DataContext = BindingViewModel.loggingSetting;
 
@@ -136,6 +135,7 @@ namespace EruptRecorder
             logger.Info("キャンセルボタンがクリックされました");
             // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
             BindingViewModel.ReflectTheValueOf(ActiveViewModel);
+            this.CopySettings.ItemsSource = BindingViewModel.copySettings;
             MessageBox.Show("各種設定を元に戻しました。");
         }
 

@@ -28,7 +28,7 @@
             <Label Name="CopySettingsLabel" Canvas.Left="40" Canvas.Top="90" Content="コピー設定" FontSize="15"/>
         </Canvas>
         
-        <DataGrid Name="CopySettings" IsReadOnly="False" AutoGenerateColumns="False" Margin="40,120,20,200" MinRowHeight="20" CanUserAddRows="True" CanUserDeleteRows="True">
+        <DataGrid Name="CopySettings" ItemsSource="{Binding}" IsReadOnly="False" AutoGenerateColumns="False" Margin="40,120,20,200" MinRowHeight="20" CanUserAddRows="True" CanUserDeleteRows="True">
             <DataGrid.Columns>
                 <DataGridCheckBoxColumn Binding="{Binding Path=isActive}" Header="有効"/>
                 <DataGridTextColumn Binding="{Binding Path=index}" Width="30" Header="INX"/>
