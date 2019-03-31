@@ -126,31 +126,17 @@ namespace EruptRecorder
         public void OnClickOkButton(object sender, RoutedEventArgs e)
         {
             logger.Info("OKボタンがクリックされました");
-            var okButtonResult = MessageBox.Show("各種設定の編集を反映しますか？", "確認", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (okButtonResult == MessageBoxResult.Yes)
-            {
-                // 現在の画面上の設定をアクティブな設定に反映させる
-                ActiveViewModel.ReflectTheValueOf(BindingViewModel);
-                MessageBox.Show("編集結果を反映しました。");
-            }
-            else if (okButtonResult == MessageBoxResult.No)
-            {
-                // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
-                BindingViewModel.ReflectTheValueOf(ActiveViewModel);
-                MessageBox.Show("編集結果の反映をキャンセルしました。");
-            }
+            // 現在の画面上の設定をアクティブな設定に反映させる
+            ActiveViewModel.ReflectTheValueOf(BindingViewModel);
+            MessageBox.Show("編集内容を反映しました。");
         }
 
         public void OnClickCancelButton(object sender, RoutedEventArgs e)
         {
             logger.Info("キャンセルボタンがクリックされました");
-            var cancelButtonResult = MessageBox.Show("各種設定を元に戻しますか？", "確認", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (cancelButtonResult == MessageBoxResult.Yes)
-            {
-                // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
-                BindingViewModel.ReflectTheValueOf(ActiveViewModel);
-                MessageBox.Show("各種設定を元に戻しました。");
-            }
+            // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
+            BindingViewModel.ReflectTheValueOf(ActiveViewModel);
+            MessageBox.Show("各種設定を元に戻しました。");
         }
 
         public void OnClosingWindow(object sender, CancelEventArgs e)
