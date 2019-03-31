@@ -133,6 +133,12 @@ namespace EruptRecorder
                 ActiveViewModel.ReflectTheValueOf(BindingViewModel);
                 MessageBox.Show("編集結果を反映しました。");
             }
+            else if (okButtonResult == MessageBoxResult.No)
+            {
+                // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
+                BindingViewModel.ReflectTheValueOf(ActiveViewModel);
+                MessageBox.Show("編集結果の反映をキャンセルしました。");
+            }
         }
 
         public void OnClickCancelButton(object sender, RoutedEventArgs e)
