@@ -128,6 +128,7 @@ namespace EruptRecorder
             // 現在の画面上の設定をアクティブな設定に反映させる
             ActiveViewModel.ReflectTheValueOf(BindingViewModel);
             MessageBox.Show("編集内容を反映しました。");
+            SaveSettings();
         }
 
         public void OnClickCancelButton(object sender, RoutedEventArgs e)
