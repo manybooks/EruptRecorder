@@ -95,11 +95,12 @@ namespace EruptRecorder
         public void ExecuteCopy()
         {
             UpdateLogger();
+            DateTime startCopyJobAt = DateTime.Now;
+
             ReadTrigerJob readTrigerJob = new ReadTrigerJob(ActiveViewModel.recordingSetting.triggerFilePath, logger);
             List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(ActiveViewModel.recordingSetting.timeOfLastRun);
 
             List<bool> jobResults = new List<bool>();
-            DateTime startCopyJobAt = DateTime.Now;
             foreach(CopySetting copySetting in ActiveViewModel.copySettings)
             {
                 CopyJob copyJob = new CopyJob(logger);
