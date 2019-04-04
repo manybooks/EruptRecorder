@@ -268,7 +268,7 @@ namespace EruptRecorder
             catch(FileNotFoundException)
             {
                 UpdateLogger();
-                logger.Error("設定情報を格納したファイルが見つかりませんでした。システム開発者に連絡してください。");
+                logger.Error("（※初回起動時に限り、このログは無視して問題ない）設定情報を格納したファイルが見つかりませんでした。システム開発者に連絡してください。");
                 return SettingsViewModel.DefaultSettings();
             }
         }
