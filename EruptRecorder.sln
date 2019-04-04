@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EruptRecorder", "EruptRecorder\EruptRecorder.csproj", "{0E454E13-3D2B-4217-AD65-3364DC2D9131}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EruptRecorderUnitTest", "EruptRecorderUnitTest\EruptRecorderUnitTest.csproj", "{697CC7E7-35B8-4865-B6CE-5EB865F0D269}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0E454E13-3D2B-4217-AD65-3364DC2D9131}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E454E13-3D2B-4217-AD65-3364DC2D9131}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E454E13-3D2B-4217-AD65-3364DC2D9131}.Release|Any CPU.Build.0 = Release|Any CPU
+		{697CC7E7-35B8-4865-B6CE-5EB865F0D269}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{697CC7E7-35B8-4865-B6CE-5EB865F0D269}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{697CC7E7-35B8-4865-B6CE-5EB865F0D269}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{697CC7E7-35B8-4865-B6CE-5EB865F0D269}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
