@@ -125,11 +125,25 @@ namespace EruptRecorder
         public void OnClickOkButton(object sender, RoutedEventArgs e)
         {
             logger.Info("OKボタンがクリックされました");
-            // 現在の画面上の設定をアクティブな設定に反映させる
-            ActiveViewModel.ReflectTheValueOf(BindingViewModel);
-            MessageBox.Show("編集内容を反映しました。");
-            SaveSettings();
-            UpdateLogger();
+            try
+            {
+                // 現在の画面上の設定値を検証する
+                BindingViewModel.IsValid();
+
+                // 現在の画面上の設定をアクティブな設定に反映させる
+                ActiveViewModel.ReflectTheValueOf(BindingViewModel);
+                MessageBox.Show("編集内容を反映しました。");
+                SaveSettings();
+                UpdateLogger();
+            }
+            catch (InvalidSettingsException ex)
+            {
+                string errorMessage = "編集内容の反映に失敗しました。\n" + ex.Message;
+                MessageBox.Show(errorMessage, "入力値エラー");
+                // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
+                BindingViewModel.ReflectTheValueOf(ActiveViewModel);
+                this.CopySettings.ItemsSource = BindingViewModel.copySettings;
+            }
         }
 
         public void OnClickCancelButton(object sender, RoutedEventArgs e)
