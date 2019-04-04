@@ -39,10 +39,14 @@ namespace EruptRecorder.Jobs
                 return;
             }
 
-            bool done = ExecuteCopy(filesToCopy, copySetting);
-            if (!done)
+            bool doneSuccessfully = ExecuteCopy(filesToCopy, copySetting);
+            if (doneSuccessfully)
             {
-                logger.Error("コピーに失敗しました。");
+                logger.Info($"インデックス{copySetting.index}のコピーが終了しました。");
+            }
+            else
+            {
+                logger.Error($"インデックス{copySetting.index}のコピーに失敗しました。");
             }
         }
 
@@ -130,6 +134,7 @@ namespace EruptRecorder.Jobs
             bool doneSuccessfully = true;
             try
             {
+                logger.Info($"インデックス{copySetting.index}のファイルコピーを開始します。");
                 DirectoryInfo destDirectory = new DirectoryInfo(copySetting.destDir);
                 foreach(FileInfo f in filesToCopy)
                 {
@@ -145,7 +150,7 @@ namespace EruptRecorder.Jobs
             catch (Exception ex)
             {
                 doneSuccessfully = false;
-                logger.Error($"コピー設定{copySetting.index}のファイルコピーに失敗しました。エラー内容は以下を参照してください。");
+                logger.Error($"インデックス{copySetting.index}のファイルコピーに失敗しました。エラー内容は以下を参照してください。");
                 logger.Error("**************************************************************************************************");
                 logger.Error(ex.ToString());
                 logger.Error("**************************************************************************************************");

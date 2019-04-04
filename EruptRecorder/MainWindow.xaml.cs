@@ -77,7 +77,7 @@ namespace EruptRecorder
 
             timer.Tick += (s, e) =>
             {
-                logger.Info("ジョブを開始します。");
+                logger.Info("トリガーの検出を開始します。");
                 ExecuteCopy();
                 UpdateInterval();
             };
@@ -112,8 +112,12 @@ namespace EruptRecorder
 
         public void UpdateTimeOfLastRun(DateTime startCopyJobAt)
         {
+            DateTime? before = ActiveViewModel.recordingSetting.timeOfLastRun;
+
             ActiveViewModel.recordingSetting.timeOfLastRun = startCopyJobAt;
             BindingViewModel.recordingSetting.timeOfLastRun = startCopyJobAt;
+
+            logger.Info($"最終検出時刻を{before?.ToLongTimeString()}から{startCopyJobAt.ToLongTimeString()}に更新しました。");
         }
 
         public void UpdateLogger()
