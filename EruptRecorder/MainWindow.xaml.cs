@@ -271,8 +271,19 @@ namespace EruptRecorder
 
         public void SaveSettings()
         {
-            if (!this.ActiveViewModel.IsValid()) return;
-            File.WriteAllText(SETTING_FILE_NAME, JsonConvert.SerializeObject(ActiveViewModel));
+            try
+            {
+                if (!this.ActiveViewModel.IsValid()) return;
+                File.WriteAllText(SETTING_FILE_NAME, JsonConvert.SerializeObject(ActiveViewModel));
+                logger.Info($"設定の値を{SETTING_FILE_NAME}に保存しました。");
+            }
+            catch
+            {
+                logger.Error("設定の値が不正だったため、設定情報の保存を行いませんでした。");
+                logger.Error("************************************************************");
+                logger.Error($"{JsonConvert.SerializeObject(ActiveViewModel)}");
+                logger.Error("************************************************************");
+            }
         }
 
     }
