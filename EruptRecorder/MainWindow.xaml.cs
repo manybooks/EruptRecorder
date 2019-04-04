@@ -176,11 +176,10 @@ namespace EruptRecorder
             try
             {
                 SaveSettings();
-                logger.Info("各種設定情報を保存しました。");
             }
             catch (Exception ex)
             {
-                logger.Error("各種設定情報の保存に失敗しました。");
+                logger.Error("システム終了時の各種設定情報の保存に失敗しました。");
                 logger.Error(ex.Message);
             }
         }
@@ -282,7 +281,7 @@ namespace EruptRecorder
                 File.WriteAllText(SETTING_FILE_NAME, JsonConvert.SerializeObject(ActiveViewModel));
                 logger.Info($"設定の値を{SETTING_FILE_NAME}に保存しました。");
             }
-            catch
+            catch (InvalidSettingsException)
             {
                 logger.Error("設定の値が不正だったため、設定情報の保存を行いませんでした。");
                 logger.Error("************************************************************");
