@@ -54,7 +54,7 @@ namespace EruptRecorder.Settings
                     minutesToGoBack = 10,
                     intervalMinutesToDetect = 1,
                     timeOfLastRun = new DateTime(),
-                    triggerFilePath = "echoindex.dat"
+                    triggerFilePath = ""
                 },
                 loggingSetting = new LoggingSetting()
                 {
