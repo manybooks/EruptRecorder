@@ -106,14 +106,23 @@ namespace EruptRecorder
             catch (Exception)
             {
                 // トリガーファイルの読み込みに失敗したため、コピージョブと最終検出時刻の更新は行わない。
+                logger.Warn("トリガーファイルの読み込みに失敗したため、コピーの実行と最終検出時刻の更新は行いませんでした。");
                 return;
             }
 
-            List<bool> jobResults = new List<bool>();
             foreach(CopySetting copySetting in ActiveViewModel.copySettings)
             {
-                CopyJob copyJob = new CopyJob(logger);
-                copyJob.Run(eventTriggers, copySetting, ActiveViewModel.recordingSetting, logger);
+                try
+                {
+                    CopyJob copyJob = new CopyJob(logger);
+                    copyJob.Run(eventTriggers, copySetting, ActiveViewModel.recordingSetting, logger);
+                }
+                catch(Exception)
+                {
+                    // コピージョブの実行に失敗したため、最終検出時刻の更新は行わない。
+                    logger.Warn("コピーの実行に失敗したため、最終検出時刻の更新は行いませんでした。");
+                    return;
+                }
             }
 
             // 最終検出時刻を更新
