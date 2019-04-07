@@ -144,7 +144,7 @@ namespace EruptRecorder.Jobs
             }
             catch (DirectoryNotFoundException)
             {
-                logger.Error($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
+                logger.Error($"コピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
                 doneSuccessfully = false;
             }
             catch (Exception ex)
