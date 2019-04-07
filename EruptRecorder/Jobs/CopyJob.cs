@@ -125,6 +125,7 @@ namespace EruptRecorder.Jobs
             catch (DirectoryNotFoundException)
             {
                 logger.Error($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
+                System.Windows.MessageBox.Show($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。", "コピー元フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
             return targetFiles.Distinct(new ImageFileComparer()).ToList();
         }
@@ -146,6 +147,7 @@ namespace EruptRecorder.Jobs
             {
                 logger.Error($"コピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
                 doneSuccessfully = false;
+                System.Windows.MessageBox.Show($"コピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。", "コピー先フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
