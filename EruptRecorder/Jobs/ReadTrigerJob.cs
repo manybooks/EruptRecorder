@@ -51,20 +51,31 @@ namespace EruptRecorder.Jobs
                     }
                 }
             }
-            catch (FileNotFoundException)
+            catch (FileNotFoundException ex)
             {
-                // 入力ファイルが存在しなかったとき
-                logger.Error($"トリガーファイルとして指定された{inputFilePath}が存在しません。");
+                // トリガーファイルが存在しなかったとき
+                logger.Error($"トリガーとして指定されたファイル{inputFilePath}が存在しません。");
+                System.Windows.MessageBox.Show($"トリガーとして指定されたファイル{inputFilePath}が存在しません。", "トリガーファイル名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                throw ex;
             }
-            catch (FormatException fe)
+            catch (FormatException ex)
             {
-                // 入力ファイルの形式が不正だったとき
-                logger.Error($"{fe.Message}");
+                // トリガーファイルの形式が不正だったとき
+                logger.Error($"{ex.Message}");
+                System.Windows.MessageBox.Show($"{ex.Message}", "トリガーのフォーマット不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                throw ex;
             }
-            catch (System.Exception e)
+            catch (ArgumentException ex)
+            {
+                // トリガーファイルパスが空欄だったとき
+                logger.Error("トリガーファイル名を入力してください。");
+                throw ex;
+            }
+            catch (System.Exception ex)
             {
                 // その他想定していない例外
-                logger.Error(e.Message);
+                logger.Error(ex.Message);
+                throw ex;
             }
             return result;
         }

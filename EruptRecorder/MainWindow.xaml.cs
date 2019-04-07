@@ -97,8 +97,17 @@ namespace EruptRecorder
             UpdateLogger();
             DateTime startCopyJobAt = DateTime.Now;
 
+            List<Models.EventTrigger> eventTriggers = new List<Models.EventTrigger>();
             ReadTrigerJob readTrigerJob = new ReadTrigerJob(ActiveViewModel.recordingSetting.triggerFilePath, logger);
-            List<Models.EventTrigger> eventTriggers = readTrigerJob.Run(ActiveViewModel.recordingSetting.timeOfLastRun);
+            try
+            {
+                eventTriggers = readTrigerJob.Run(ActiveViewModel.recordingSetting.timeOfLastRun);
+            }
+            catch (Exception)
+            {
+                // トリガーファイルの読み込みに失敗したため、コピージョブと最終検出時刻の更新は行わない。
+                return;
+            }
 
             List<bool> jobResults = new List<bool>();
             foreach(CopySetting copySetting in ActiveViewModel.copySettings)
