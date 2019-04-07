@@ -68,7 +68,7 @@ namespace EruptRecorder.Jobs
             catch (ArgumentException ex)
             {
                 // トリガーファイルパスが空欄だったとき
-                logger.Error("トリガーファイル名を入力してください。");
+                logger.Warn("トリガーファイル名が入力されていません。");
                 throw ex;
             }
             catch (System.Exception ex)
