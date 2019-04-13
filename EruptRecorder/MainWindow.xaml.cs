@@ -97,6 +97,12 @@ namespace EruptRecorder
             UpdateLogger();
             DateTime startCopyJobAt = DateTime.Now;
 
+            if (NoneOfTheCopySettingsAreActive())
+            {
+                logger.Info("すべてのコピー設定が無効だったため、トリガーファイルの読み込みは行いませんでした。");
+                return;
+            }
+
             List<Models.EventTrigger> eventTriggers = new List<Models.EventTrigger>();
             ReadTrigerJob readTrigerJob = new ReadTrigerJob(ActiveViewModel.recordingSetting.triggerFilePath, logger);
             try
@@ -331,6 +337,15 @@ namespace EruptRecorder
                 return;
             }
             BindingViewModel.loggingSetting.logOutputDir = dialog.FileName;
+        }
+
+        private bool NoneOfTheCopySettingsAreActive()
+        {
+            foreach(CopySetting copySetting in ActiveViewModel.copySettings)
+            {
+                if (copySetting.isActive) return false;
+            }
+            return true;
         }
     }
 }
