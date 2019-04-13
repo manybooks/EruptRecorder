@@ -319,5 +319,18 @@ namespace EruptRecorder
             }
             BindingViewModel.recordingSetting.triggerFilePath = dialog.FileName;
         }
+
+        private void LogOutputDir_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog("ログ保存先フォルダ選択");
+            dialog.IsFolderPicker = true;
+
+            var ret = dialog.ShowDialog();
+            if (ret != CommonFileDialogResult.Ok)
+            {
+                return;
+            }
+            BindingViewModel.loggingSetting.logOutputDir = dialog.FileName;
+        }
     }
 }

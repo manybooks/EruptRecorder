@@ -67,7 +67,7 @@
 
         <Canvas>
             <Label Name="LogOutputDirLabel" Canvas.Top="300" Canvas.Left="40" Content="ログ保存場所フォルダ" FontSize="15"/>
-            <TextBox Name="LogOutputDir" Text="{Binding Path=logOutputDir}" FontSize="15" Canvas.Top="330" Canvas.Left="45" Width="400" Height="30"/>
+            <TextBox Name="LogOutputDir" Text="{Binding Path=logOutputDir}" GotFocus="LogOutputDir_GotFocus" FontSize="15" Canvas.Top="330" Canvas.Left="45" Width="400" Height="30"/>
 
             <Button Name="Ok" Content="OK" Click="OnClickOkButton" Canvas.Top="380" Canvas.Left="500" Width="70" Height="30"/>
             <Button Name="Cancel" Content="キャンセル" Click="OnClickCancelButton" Canvas.Top="380" Canvas.Left="600" Width="100" Height="30"/>
