@@ -99,7 +99,7 @@ namespace EruptRecorder
 
             if (NoneOfTheCopySettingsAreActive())
             {
-                logger.Info("すべてのコピー設定が無効だったため、トリガーファイルの読み込みは行いませんでした。");
+                logger.Info("有効なコピー設定が１つも存在しなかったため、トリガーファイルの読み込みは行いませんでした。");
                 return;
             }
 
