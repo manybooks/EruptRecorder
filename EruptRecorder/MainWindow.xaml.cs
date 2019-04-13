@@ -308,5 +308,16 @@ namespace EruptRecorder
             }
         }
 
+        private void TriggerFilePath_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog("トリガーファイルパス選択");
+
+            var ret = dialog.ShowDialog();
+            if (ret != CommonFileDialogResult.Ok)
+            {
+                return;
+            }
+            BindingViewModel.recordingSetting.triggerFilePath = dialog.FileName;
+        }
     }
 }
