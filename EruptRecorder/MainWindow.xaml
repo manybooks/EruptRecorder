@@ -69,6 +69,11 @@
             <Label Name="LogOutputDirLabel" Canvas.Top="300" Canvas.Left="40" Content="ログ保存場所フォルダ" FontSize="15"/>
             <TextBox Name="LogOutputDir" Text="{Binding Path=logOutputDir}" GotFocus="LogOutputDir_GotFocus" FontSize="15" Canvas.Top="330" Canvas.Left="45" Width="400" Height="30"/>
 
+            <Label Name="StatusLabel" Content="状態" Canvas.Top="260" Canvas.Left="530" FontSize="15"/>
+            <Rectangle Width="180" Height="50" Stroke="Black" Canvas.Left="530" Canvas.Top="290"/>
+            <Button Name="StatusButton" Click="StatusButton_Click" Content="{Binding Path=buttonSymbol}"  FontSize="15" Canvas.Top="300" Canvas.Left="550" Width="40" Height="30"/>
+            <Label Name="StatusDescription" Content="{Binding Path=description}" Foreground="{Binding Path=descColor}" Canvas.Top="300" Canvas.Left="600" FontSize="15" FontWeight="Bold"/>
+
             <Button Name="Ok" Content="OK" Click="OnClickOkButton" Canvas.Top="380" Canvas.Left="500" Width="70" Height="30"/>
             <Button Name="Cancel" Content="キャンセル" Click="OnClickCancelButton" Canvas.Top="380" Canvas.Left="600" Width="100" Height="30"/>
         </Canvas>

@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace EruptRecorder.Settings
 {
@@ -16,6 +17,7 @@ namespace EruptRecorder.Settings
         public ObservableCollection<CopySetting> copySettings { get; set; }
         public RecordingSetting recordingSetting { get; set; }
         public LoggingSetting loggingSetting { get; set; }
+        public GlobalStatus globalStatus { get; set; }
 
         public bool IsValid()
         {
@@ -59,6 +61,10 @@ namespace EruptRecorder.Settings
                 loggingSetting = new LoggingSetting()
                 {
                     logOutputDir = ""
+                },
+                globalStatus = new GlobalStatus()
+                {
+                    status = GlobalStatus.AppStatus.NotReady
                 }
             };
         }
@@ -351,6 +357,131 @@ namespace EruptRecorder.Settings
         public bool IsValid()
         {
             return true;
+        }
+    }
+
+    public class GlobalStatus : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public enum AppStatus
+        {
+            Working,
+            Pause,
+            NotReady
+        }
+
+        private AppStatus _status { get; set; }
+        public AppStatus status
+        {
+            get
+            {
+                return _status;
+            }
+            set
+            {
+                if (value != this._status)
+                {
+                    this._status = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        private string _description
+        {
+            get
+            {
+                switch (this.status)
+                {
+                    case AppStatus.Working:
+                        return "正常作動中";
+                    case AppStatus.Pause:
+                        return "一時停止中";
+                    case AppStatus.NotReady:
+                        return "設定不備";
+                    default:
+                        return "設定不備";
+                }
+            }
+        }
+
+        public string description
+        {
+            get
+            {
+                return this._description;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
+        }
+
+        private Brush _descColor
+        {
+            get
+            {
+                switch (this.status)
+                {
+                    case AppStatus.Working:
+                        return new SolidColorBrush(Colors.DarkGreen);
+                    case AppStatus.Pause:
+                        return new SolidColorBrush(Colors.Black);
+                    case AppStatus.NotReady:
+                        return new SolidColorBrush(Colors.Red);
+                    default:
+                        return new SolidColorBrush(Colors.Red);
+                }
+
+            }
+        }
+        public Brush descColor
+        {
+            get
+            {
+                return this._descColor;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _buttonSymbol
+        {
+            get
+            {
+                switch (this.status)
+                {
+                    case AppStatus.Working:
+                        return "Ⅱ";
+                    case AppStatus.Pause:
+                        return "▶";
+                    case AppStatus.NotReady:
+                        return "NG";
+                    default:
+                        return "NG";
+                }
+            }
+        }
+        public string buttonSymbol
+        {
+            get
+            {
+                return this._buttonSymbol;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
         }
     }
 }

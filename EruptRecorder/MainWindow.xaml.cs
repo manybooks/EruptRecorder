@@ -51,6 +51,8 @@ namespace EruptRecorder
                 this.TriggerFilePath.DataContext = BindingViewModel.recordingSetting;
                 this.CopySettings.DataContext = BindingViewModel.copySettings;
                 this.LogOutputDir.DataContext = BindingViewModel.loggingSetting;
+                this.StatusButton.DataContext = BindingViewModel.globalStatus;
+                this.StatusDescription.DataContext = BindingViewModel.globalStatus;
 
                 UpdateLogger();
                 logger.Info("システムを起動しました。");
@@ -77,7 +79,6 @@ namespace EruptRecorder
 
             timer.Tick += (s, e) =>
             {
-                logger.Info("トリガーの検出を開始します。");
                 ExecuteCopy();
                 UpdateInterval();
             };
@@ -97,12 +98,30 @@ namespace EruptRecorder
             UpdateLogger();
             DateTime startCopyJobAt = DateTime.Now;
 
+            if (this.BindingViewModel.globalStatus.status != GlobalStatus.AppStatus.Working)
+            {
+                try
+                {
+                    logger.Debug("一時停止中または設定不備のため、トリガーファイルの読み込みは行いませんでした。");
+                    logger.Debug($"状態：{this.BindingViewModel.globalStatus.status}");
+                    return;
+                }
+                catch(Exception ex)
+                {
+                    logger.Error("状態判定中にエラーが発生しました。");
+                    logger.Error("*************************************************************************");
+                    logger.Error(ex.Message);
+                    logger.Error("*************************************************************************");
+                }
+            }
+
             if (NoneOfTheCopySettingsAreActive())
             {
                 logger.Info("有効なコピー設定が１つも存在しなかったため、トリガーファイルの読み込みは行いませんでした。");
                 return;
             }
 
+            logger.Info("トリガーの検出を開始します。");
             List<Models.EventTrigger> eventTriggers = new List<Models.EventTrigger>();
             ReadTrigerJob readTrigerJob = new ReadTrigerJob(ActiveViewModel.recordingSetting.triggerFilePath, logger);
             try
@@ -164,6 +183,9 @@ namespace EruptRecorder
                 MessageBox.Show("編集内容を反映しました。");
                 SaveSettings();
                 UpdateLogger();
+
+                // もし状態が「設定不備」だった場合、正常に戻す
+                RecoverInvalidStatus();
             }
             catch (InvalidSettingsException ex)
             {
@@ -172,6 +194,8 @@ namespace EruptRecorder
                 // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
                 BindingViewModel.ReflectTheValueOf(ActiveViewModel);
                 this.CopySettings.ItemsSource = BindingViewModel.copySettings;
+                // 状態を「設定不備」に更新する
+                SetStatusNotReady();
             }
         }
 
@@ -346,6 +370,74 @@ namespace EruptRecorder
                 if (copySetting.isActive) return false;
             }
             return true;
+        }
+
+        private void StatusButton_Click(object sender, RoutedEventArgs e)
+        {
+            switch (this.BindingViewModel.globalStatus.status)
+            {
+                case GlobalStatus.AppStatus.Working:
+                    StopToDetectTrigger();
+                    break;
+                case GlobalStatus.AppStatus.Pause:
+                    RestartToDetectTrigger();
+                    break;
+                case GlobalStatus.AppStatus.NotReady:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void StopToDetectTrigger()
+        {
+            UpdateStatusTo(GlobalStatus.AppStatus.Pause);
+            logger.Info("トリガーファイルの検出を一時停止します。");
+        }
+
+        private void RestartToDetectTrigger()
+        {
+            UpdateStatusTo(GlobalStatus.AppStatus.Working);
+            logger.Info("トリガーファイルの検出を再開します。");
+        }
+
+        private void SetStatusNotReady()
+        {
+            UpdateStatusTo(GlobalStatus.AppStatus.NotReady);
+            logger.Error("設定情報に不備があります。修正してOKボタンを押して反映してください。");
+        }
+
+        private void RecoverInvalidStatus()
+        {
+            if (this.BindingViewModel.globalStatus.status == GlobalStatus.AppStatus.NotReady)
+            {
+                UpdateStatusTo(GlobalStatus.AppStatus.Working);
+            }
+        }
+
+        private void UpdateStatusTo(GlobalStatus.AppStatus targetStatus)
+        {
+            switch (targetStatus)
+            {
+                case GlobalStatus.AppStatus.Working:
+                    this.BindingViewModel.globalStatus.status = GlobalStatus.AppStatus.Working;
+                    this.BindingViewModel.globalStatus.buttonSymbol = this.BindingViewModel.globalStatus.buttonSymbol;
+                    this.BindingViewModel.globalStatus.description = this.BindingViewModel.globalStatus.description;
+                    this.BindingViewModel.globalStatus.descColor = this.BindingViewModel.globalStatus.descColor;
+                    break;
+                case GlobalStatus.AppStatus.Pause:
+                    this.BindingViewModel.globalStatus.status = GlobalStatus.AppStatus.Pause;
+                    this.BindingViewModel.globalStatus.buttonSymbol = this.BindingViewModel.globalStatus.buttonSymbol;
+                    this.BindingViewModel.globalStatus.description = this.BindingViewModel.globalStatus.description;
+                    this.BindingViewModel.globalStatus.descColor = this.BindingViewModel.globalStatus.descColor;
+                    break;
+                case GlobalStatus.AppStatus.NotReady:
+                    this.BindingViewModel.globalStatus.status = GlobalStatus.AppStatus.NotReady;
+                    this.BindingViewModel.globalStatus.buttonSymbol = this.BindingViewModel.globalStatus.buttonSymbol;
+                    this.BindingViewModel.globalStatus.description = this.BindingViewModel.globalStatus.description;
+                    this.BindingViewModel.globalStatus.descColor = this.BindingViewModel.globalStatus.descColor;
+                    break;
+            }
         }
     }
 }
