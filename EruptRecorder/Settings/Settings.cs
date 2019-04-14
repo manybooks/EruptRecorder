@@ -214,7 +214,10 @@ namespace EruptRecorder.Settings
             if (this.fileExtension.StartsWith(".")) throw new InvalidSettingsException("コピー設定のファイル拡張子に'.'を含まないでください。");
             if (!AreEqual(Regex.Matches(this.fileExtension, "[a-z]+"), this.fileExtension) && this.fileExtension != "*") throw new InvalidSettingsException("コピー設定のファイル拡張子には小文字のアルファベットまたは'*'のみを使用して下さい。");
             if (string.IsNullOrEmpty(this.srcDir)) throw new InvalidSettingsException("コピー設定のコピー元フォルダは入力必須です。");
+            if (!Directory.Exists(this.srcDir)) throw new InvalidSettingsException($"Index{this.index}のコピー設定で指定されたコピー元フォルダが存在しません。");
             if (string.IsNullOrEmpty(this.destDir)) throw new InvalidSettingsException("コピー設定のコピー先フォルダは入力必須です。");
+            if (!Directory.Exists(this.destDir)) throw new InvalidSettingsException($"Index{this.index}のコピー設定で指定されたコピー先フォルダが存在しません。");
+
             return true;
         }
 
@@ -318,6 +321,7 @@ namespace EruptRecorder.Settings
             if (this.minutesToGoBack < 1) throw new InvalidSettingsException("さかのぼり時間には0以上の整数を設定してください。");
             if (this.intervalMinutesToDetect < 1) throw new InvalidSettingsException("検出インターバルには0以上の整数を設定してください。");
             if (string.IsNullOrEmpty(this.triggerFilePath)) throw new InvalidSettingsException("トリガーファイル名の入力は必須です。");
+            if (!File.Exists(this.triggerFilePath)) throw new InvalidSettingsException("指定されたトリガーファイルが存在しません。");
             return true;
         }
     }
@@ -356,6 +360,8 @@ namespace EruptRecorder.Settings
 
         public bool IsValid()
         {
+            if (string.IsNullOrEmpty(this.logOutputDir)) return true;
+            if (!Directory.Exists(this.logOutputDir)) throw new InvalidSettingsException("指定されたログ保存先フォルダが存在しません。");
             return true;
         }
     }
