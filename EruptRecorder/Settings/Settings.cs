@@ -214,9 +214,9 @@ namespace EruptRecorder.Settings
             if (this.fileExtension.StartsWith(".")) throw new InvalidSettingsException("コピー設定のファイル拡張子に'.'を含まないでください。");
             if (!AreEqual(Regex.Matches(this.fileExtension, "[a-z]+"), this.fileExtension) && this.fileExtension != "*") throw new InvalidSettingsException("コピー設定のファイル拡張子には小文字のアルファベットまたは'*'のみを使用して下さい。");
             if (string.IsNullOrEmpty(this.srcDir)) throw new InvalidSettingsException("コピー設定のコピー元フォルダは入力必須です。");
-            if (!Directory.Exists(this.srcDir)) throw new InvalidSettingsException($"Index{this.index}のコピー設定で指定されたコピー元フォルダが存在しません。");
+            if (!Directory.Exists(this.srcDir)) throw new InvalidSettingsException($"インデックス{this.index}のコピー設定で指定されたコピー元フォルダが存在しません。");
             if (string.IsNullOrEmpty(this.destDir)) throw new InvalidSettingsException("コピー設定のコピー先フォルダは入力必須です。");
-            if (!Directory.Exists(this.destDir)) throw new InvalidSettingsException($"Index{this.index}のコピー設定で指定されたコピー先フォルダが存在しません。");
+            if (!Directory.Exists(this.destDir)) throw new InvalidSettingsException($"インデックス{this.index}のコピー設定で指定されたコピー先フォルダが存在しません。");
 
             return true;
         }
