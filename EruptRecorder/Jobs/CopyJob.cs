@@ -122,11 +122,11 @@ namespace EruptRecorder.Jobs
                     targetFiles.AddRange(filesToCopy);
                 }
             }
-            catch (DirectoryNotFoundException ex)
+            catch (DirectoryNotFoundException)
             {
                 logger.Error($"インデックス{copySetting.index}のコピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
                 System.Windows.MessageBox.Show($"インデックス{copySetting.index}のコピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。", "コピー元フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                throw ex;
+                throw new InvalidSettingsException($"インデックス{copySetting.index}のコピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
             }
             return targetFiles.Distinct(new ImageFileComparer()).ToList();
         }
@@ -144,11 +144,11 @@ namespace EruptRecorder.Jobs
                     logger.Info($"ファイル '{f.Name}'を'{copySetting.srcDir}'から'{copySetting.destDir}'へコピーしました。");
                 }
             }
-            catch (DirectoryNotFoundException ex)
+            catch (DirectoryNotFoundException)
             {
                 logger.Error($"インデックス{copySetting.index}のコピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
                 System.Windows.MessageBox.Show($"インデックス{copySetting.index}のコピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。", "コピー先フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                throw ex;
+                throw new InvalidSettingsException($"インデックス{copySetting.index}のコピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
             }
             catch (Exception ex)
             {

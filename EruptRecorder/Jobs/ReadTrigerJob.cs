@@ -51,12 +51,12 @@ namespace EruptRecorder.Jobs
                     }
                 }
             }
-            catch (FileNotFoundException ex)
+            catch (FileNotFoundException)
             {
                 // トリガーファイルが存在しなかったとき
                 logger.Error($"トリガーとして指定されたファイル{inputFilePath}が存在しません。");
                 System.Windows.MessageBox.Show($"トリガーとして指定されたファイル{inputFilePath}が存在しません。", "トリガーファイル名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                throw ex;
+                throw new InvalidSettingsException($"トリガーとして指定されたファイル{inputFilePath}が存在しません。");
             }
             catch (FormatException ex)
             {
@@ -65,11 +65,11 @@ namespace EruptRecorder.Jobs
                 System.Windows.MessageBox.Show($"{ex.Message}", "トリガーのフォーマット不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 throw ex;
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // トリガーファイルパスが空欄だったとき
                 logger.Warn("トリガーファイル名が入力されていません。");
-                throw ex;
+                throw new InvalidSettingsException("トリガーファイル名が入力されていません。");
             }
             catch (System.Exception ex)
             {

@@ -128,8 +128,20 @@ namespace EruptRecorder
             {
                 eventTriggers = readTrigerJob.Run(ActiveViewModel.recordingSetting.timeOfLastRun);
             }
+            catch (InvalidSettingsException)
+            {
+                // 設定情報の不備が原因
+                // トリガーファイルの読み込みに失敗したため、コピージョブと最終検出時刻の更新は行わない。
+                logger.Warn("トリガーファイルの読み込みに失敗したため、コピーの実行と最終検出時刻の更新は行いませんでした。");
+
+                // 状態を「設定不備」に設定
+                SetStatusNotReady();
+
+                return;
+            }
             catch (Exception)
             {
+                // トリガーファイルのフォーマット不正もしくは予期せぬエラーが原因
                 // トリガーファイルの読み込みに失敗したため、コピージョブと最終検出時刻の更新は行わない。
                 logger.Warn("トリガーファイルの読み込みに失敗したため、コピーの実行と最終検出時刻の更新は行いませんでした。");
                 return;
@@ -142,8 +154,20 @@ namespace EruptRecorder
                     CopyJob copyJob = new CopyJob(logger);
                     copyJob.Run(eventTriggers, copySetting, ActiveViewModel.recordingSetting, logger);
                 }
+                catch(InvalidSettingsException)
+                {
+                    // 設定情報の不備が原因
+                    // コピージョブの実行に失敗したため、最終検出時刻の更新は行わない。
+                    logger.Warn("コピーの実行に失敗したため、最終検出時刻の更新は行いませんでした。");
+
+                    // 状態を「設定不備」に設定
+                    SetStatusNotReady();
+
+                    return;
+                }
                 catch(Exception)
                 {
+                    // 予期せぬエラーが原因
                     // コピージョブの実行に失敗したため、最終検出時刻の更新は行わない。
                     logger.Warn("コピーの実行に失敗したため、最終検出時刻の更新は行いませんでした。");
                     return;
