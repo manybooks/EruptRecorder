@@ -190,7 +190,7 @@ namespace EruptRecorder
             catch (InvalidSettingsException ex)
             {
                 string errorMessage = "編集内容の反映に失敗しました。\n" + ex.Message;
-                MessageBox.Show(errorMessage, "入力値エラー");
+                MessageBox.Show(errorMessage, "入力値エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
                 BindingViewModel.ReflectTheValueOf(ActiveViewModel);
                 this.CopySettings.ItemsSource = BindingViewModel.copySettings;
