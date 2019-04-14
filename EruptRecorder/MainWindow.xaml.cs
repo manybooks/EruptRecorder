@@ -194,8 +194,6 @@ namespace EruptRecorder
                 // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
                 BindingViewModel.ReflectTheValueOf(ActiveViewModel);
                 this.CopySettings.ItemsSource = BindingViewModel.copySettings;
-                // 状態を「設定不備」に更新する
-                SetStatusNotReady();
             }
         }
 
@@ -326,6 +324,10 @@ namespace EruptRecorder
             try
             {
                 if (!this.ActiveViewModel.IsValid()) return;
+                
+                // アプリケーション状態の同期をとる
+                ActiveViewModel.globalStatus = BindingViewModel.globalStatus;
+
                 File.WriteAllText(SETTING_FILE_NAME, JsonConvert.SerializeObject(ActiveViewModel));
                 logger.Info($"設定の値を{SETTING_FILE_NAME}に保存しました。");
             }
