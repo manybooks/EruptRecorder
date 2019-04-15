@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EruptRecorder.Models;
 using EruptRecorder.Settings;
 using EruptRecorder.Logging;
+using EruptRecorder.Utils;
 using log4net;
 
 namespace EruptRecorder.Jobs
@@ -62,7 +63,7 @@ namespace EruptRecorder.Jobs
 
             List<CopyCondition> copyConditions = new List<CopyCondition>();
             CopyCondition currentCondition = new CopyCondition();
-            DateTime currentTo = eventTriggers.FirstOrDefault().timeStamp;
+            DateTime currentTo = DateTimeUtil.RoundUpMilliseconds(eventTriggers.FirstOrDefault().timeStamp); // バッファをもってミリ秒を切り上げる
             bool isActive = false;
 
             foreach (EventTrigger trigger in eventTriggers)
@@ -86,14 +87,14 @@ namespace EruptRecorder.Jobs
                     if (trigger.flag == targetIndex)
                     {
                         isActive = true;
-                        currentCondition.from = trigger.timeStamp.AddMinutes(-1 * minutesToGoBack);
+                        currentCondition.from = DateTimeUtil.RoundDownMilliseconds(trigger.timeStamp).AddMinutes(-1 * minutesToGoBack);
                     }
                 }
 
                 if (trigger.flag == targetIndex)
                 {
                     // Deactivate時に設定する遡り終了時刻を設定
-                    currentTo = trigger.timeStamp.AddSeconds(1); // DateTime型だとミリ秒考慮ができず、最新のファイルがコピーされない可能性があるため、1秒加算する
+                    currentTo = DateTimeUtil.RoundUpMilliseconds(trigger.timeStamp); // バッファをもってミリ秒を切り上げる
                 }
             }
 
