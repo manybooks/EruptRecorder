@@ -10,14 +10,12 @@ namespace EruptRecorder.Utils
     {
         public static DateTime RoundDownMilliseconds(DateTime origin)
         {
-            int millisecondsToReduce = origin.Millisecond;
-            return origin.AddMilliseconds(-1 * millisecondsToReduce);
+            return new DateTime(origin.Year, origin.Month, origin.Day, origin.Hour, origin.Minute, origin.Second, 0);
         }
 
         public static DateTime RoundUpMilliseconds(DateTime origin)
         {
-            int millisecondsToReduce = origin.Millisecond;
-            DateTime roundDowned = origin.AddMilliseconds(-1 * millisecondsToReduce);
+            DateTime roundDowned = new DateTime(origin.Year, origin.Month, origin.Day, origin.Hour, origin.Minute, origin.Second, 0);
             return roundDowned.AddSeconds(1);
         }
     }
