@@ -20,18 +20,18 @@ namespace EruptRecorder.Models
 
         public static EventTrigger Parse(string line)
         {
-            var values = line.Split(' ');
+            var values = line.Split(',');
 
             DateTime timeStamp;
             int flag;
 
-            if (DateTime.TryParseExact(values[0], "yyyyMMddHHmmssff", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out timeStamp) &&
+            if (DateTime.TryParseExact(values[0].Substring(0, 16), "yyyyMMddHHmmssff", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out timeStamp) &&
                 int.TryParse(values[1], out flag))
             {
                 return new EventTrigger(timeStamp, flag);
             }
 
-            throw new FormatException("トリガーファイルの形式が不正です。トリガーファイルの形式は{yyyyMMddhhmmssff} {index}である必要があります。");
+            throw new FormatException("トリガーファイルの形式が不正です。トリガーファイルの形式は{yyyyMMddhhmmssff} ,{index}である必要があります。");
         }
     }
 }
