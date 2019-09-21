@@ -49,7 +49,10 @@ namespace EruptRecorder
                 this.IntervalMinutesToDetect.DataContext = BindingViewModel.recordingSetting;
                 this.TimeOfLastRun.DataContext = BindingViewModel.recordingSetting;
                 this.TriggerFilePath.DataContext = BindingViewModel.recordingSetting;
-                this.CopySettings.DataContext = BindingViewModel.copySettings;
+                this.CopyStartDateTime.DataContext = BindingViewModel.copySetting;
+                this.CopyEndDateTime.DataContext = BindingViewModel.copySetting;
+                this.CopySrcDir.DataContext = BindingViewModel.copySetting;
+                this.CopyDestDir.DataContext = BindingViewModel.copySetting;
                 this.LogOutputDir.DataContext = BindingViewModel.loggingSetting;
                 this.StatusButton.DataContext = BindingViewModel.globalStatus;
                 this.StatusDescription.DataContext = BindingViewModel.globalStatus;
@@ -141,31 +144,28 @@ namespace EruptRecorder
                 return;
             }
 
-            foreach(CopySetting copySetting in ActiveViewModel.copySettings)
+            try
             {
-                try
-                {
-                    CopyJob copyJob = new CopyJob(logger);
-                    copyJob.Run(eventTriggers, copySetting, ActiveViewModel.recordingSetting, logger);
-                }
-                catch(InvalidSettingsException)
-                {
-                    // 設定情報の不備が原因
-                    // コピージョブの実行に失敗したため、最終検出時刻の更新は行わない。
-                    logger.Warn("コピーの実行に失敗したため、最終検出時刻の更新は行いませんでした。");
+                CopyJob copyJob = new CopyJob(logger);
+                copyJob.Run(eventTriggers, ActiveViewModel.copySetting, ActiveViewModel.recordingSetting, logger);
+            }
+            catch(InvalidSettingsException)
+            {
+                // 設定情報の不備が原因
+                // コピージョブの実行に失敗したため、最終検出時刻の更新は行わない。
+                logger.Warn("コピーの実行に失敗したため、最終検出時刻の更新は行いませんでした。");
 
-                    // 状態を「設定不備」に設定
-                    SetStatusNotReady();
+                // 状態を「設定不備」に設定
+                SetStatusNotReady();
 
-                    return;
-                }
-                catch(Exception)
-                {
-                    // 予期せぬエラーが原因
-                    // コピージョブの実行に失敗したため、最終検出時刻の更新は行わない。
-                    logger.Warn("コピーの実行に失敗したため、最終検出時刻の更新は行いませんでした。");
-                    return;
-                }
+                return;
+            }
+            catch(Exception)
+            {
+                // 予期せぬエラーが原因
+                // コピージョブの実行に失敗したため、最終検出時刻の更新は行わない。
+                logger.Warn("コピーの実行に失敗したため、最終検出時刻の更新は行いませんでした。");
+                return;
             }
 
             // 最終検出時刻を更新
@@ -192,7 +192,7 @@ namespace EruptRecorder
         {
             logger.Info("OKボタンがクリックされました");
             try
-                {
+            {
                 // 現在の画面上の設定値を検証する
                 BindingViewModel.IsValid();
 
@@ -211,7 +211,6 @@ namespace EruptRecorder
                 MessageBox.Show(errorMessage, "入力値エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
                 BindingViewModel.ReflectTheValueOf(ActiveViewModel);
-                this.CopySettings.ItemsSource = BindingViewModel.copySettings;
             }
         }
 
@@ -220,7 +219,6 @@ namespace EruptRecorder
             logger.Info("キャンセルボタンがクリックされました");
             // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す
             BindingViewModel.ReflectTheValueOf(ActiveViewModel);
-            this.CopySettings.ItemsSource = BindingViewModel.copySettings;
             MessageBox.Show("各種設定を元に戻しました。");
         }
 
@@ -248,12 +246,8 @@ namespace EruptRecorder
             }
         }
 
-        public void OnSrcDirColumn_MouseDown(object sender, MouseButtonEventArgs e)
+        private void SrcDir_GotFocus(object sender, RoutedEventArgs e)
         {
-            // 選択された行を特定
-            TextBlock selected = sender as TextBlock;
-            var selectedRow = selected.DataContext as CopySetting;
-
             var selectFromExplorer = MessageBox.Show("エクスプローラーからコピー元フォルダを選択しますか？", "編集方法選択", MessageBoxButton.YesNo, MessageBoxImage.Information);
             // エクスプローラーから選択する
             if (selectFromExplorer == MessageBoxResult.Yes)
@@ -268,25 +262,21 @@ namespace EruptRecorder
                     return;
                 }
 
-                selectedRow.srcDir = dialog.FileName;
+                BindingViewModel.copySetting.srcDir = dialog.FileName;
             }
             // テキストで入力する
             else
             {
                 string inputPath = Microsoft.VisualBasic.Interaction.InputBox("コピー元フォルダを設定してください。", "テキスト入力");
-                if(!string.IsNullOrEmpty(inputPath))
+                if (!string.IsNullOrEmpty(inputPath))
                 {
-                    selectedRow.srcDir = inputPath;
+                    BindingViewModel.copySetting.srcDir = inputPath;
                 }
             }
         }
 
-        public void OnDestDirColumn_MouseDown(object sender, MouseButtonEventArgs e)
+        private void DestDir_GotFocus(object sender, RoutedEventArgs e)
         {
-            // 選択された行を特定
-            TextBlock selected = sender as TextBlock;
-            var selectedRow = selected.DataContext as CopySetting;
-
             var selectFromExplorer = MessageBox.Show("エクスプローラーからコピー先フォルダを選択しますか？", "編集方法選択", MessageBoxButton.YesNo, MessageBoxImage.Information);
             // エクスプローラーから選択する
             if (selectFromExplorer == MessageBoxResult.Yes)
@@ -301,7 +291,7 @@ namespace EruptRecorder
                     return;
                 }
 
-                selectedRow.destDir = dialog.FileName;
+                BindingViewModel.copySetting.destDir = dialog.FileName;
             }
             // テキストで入力する
             else
@@ -309,11 +299,10 @@ namespace EruptRecorder
                 string inputPath = Microsoft.VisualBasic.Interaction.InputBox("コピー先フォルダを設定してください。", "テキスト入力");
                 if (!string.IsNullOrEmpty(inputPath))
                 {
-                    selectedRow.destDir = inputPath;
+                    BindingViewModel.copySetting.destDir = inputPath;
                 }
             }
         }
-
 
         private DirectoryInfo GetProjectRootDir()
         {

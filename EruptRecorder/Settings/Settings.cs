@@ -14,7 +14,7 @@ namespace EruptRecorder.Settings
 {
     public class SettingsViewModel
     {
-        public ObservableCollection<CopySetting> copySettings { get; set; }
+        public CopySetting copySetting { get; set; }
         public RecordingSetting recordingSetting { get; set; }
         public LoggingSetting loggingSetting { get; set; }
         public GlobalStatus globalStatus { get; set; }
@@ -23,10 +23,7 @@ namespace EruptRecorder.Settings
         {
             if (!this.recordingSetting.IsValid()) return false;
             if (!this.loggingSetting.IsValid()) return false;
-            foreach (CopySetting copySetting in copySettings)
-            {
-                if (!copySetting.IsValid()) return false;
-            }
+            if (!copySetting.IsValid()) return false;
             return true;
         }
 
@@ -39,15 +36,12 @@ namespace EruptRecorder.Settings
         {
             return new SettingsViewModel()
             {
-                copySettings = new ObservableCollection<CopySetting>()
+                copySetting = new CopySetting()
                 {
-                    new CopySetting()
-                    {
-                        copyStartDateTime = new DateTime(1900, 1, 1, 0, 0, 0),
-                        copyEndDateTime = new DateTime(3000, 1, 1, 0, 0, 0),
-                        srcDir = "",
-                        destDir = ""
-                    }
+                    copyStartDateTime = new DateTime(1900, 1, 1, 0, 0, 0),
+                    copyEndDateTime = new DateTime(3000, 1, 1, 0, 0, 0),
+                    srcDir = "",
+                    destDir = ""
                 },
                 recordingSetting = new RecordingSetting()
                 {
@@ -75,17 +69,10 @@ namespace EruptRecorder.Settings
 
             this.loggingSetting.logOutputDir = another.loggingSetting.logOutputDir;
 
-            this.copySettings = new ObservableCollection<CopySetting>();
-            for (int i = 0; i < another.copySettings.Count(); i++)
-            {
-                CopySetting newOne = new CopySetting();
-                this.copySettings.Add(newOne);
-
-                this.copySettings[i].copyStartDateTime = another.copySettings[i].copyStartDateTime;
-                this.copySettings[i].copyEndDateTime = another.copySettings[i].copyEndDateTime;
-                this.copySettings[i].srcDir = another.copySettings[i].srcDir;
-                this.copySettings[i].destDir = another.copySettings[i].destDir;
-            }
+            this.copySetting.copyStartDateTime = another.copySetting.copyStartDateTime;
+            this.copySetting.copyEndDateTime = another.copySetting.copyEndDateTime;
+            this.copySetting.srcDir = another.copySetting.srcDir;
+            this.copySetting.destDir = another.copySetting.destDir;
         }
     }
 
@@ -107,70 +94,6 @@ namespace EruptRecorder.Settings
             }
         }
 
-        //public bool _isActive;
-        //public bool isActive
-        //{
-        //    get
-        //    {
-        //        return this._isActive;
-        //    }
-        //    set
-        //    {
-        //        if (value != this._isActive)
-        //        {
-        //            this._isActive = value;
-        //            NotifyPropertyChanged();
-        //        }
-        //    }
-        //}
-        //public int _index;
-        //public int index
-        //{
-        //    get
-        //    {
-        //        return this._index;
-        //    }
-        //    set
-        //    {
-        //        if (value != this._index)
-        //        {
-        //            this._index = value;
-        //            NotifyPropertyChanged();
-        //        }
-        //    }
-        //}
-        //public string _prefix;
-        //public string prefix
-        //{
-        //    get
-        //    {
-        //        return this._prefix;
-        //    }
-        //    set
-        //    {
-        //        if (value != this._prefix)
-        //        {
-        //            this._prefix = value;
-        //            NotifyPropertyChanged();
-        //        }
-        //    }
-        //}
-        //public string _fileExtension;
-        //public string fileExtension
-        //{
-        //    get
-        //    {
-        //        return this._fileExtension;
-        //    }
-        //    set
-        //    {
-        //        if (value != this._fileExtension)
-        //        {
-        //            this._fileExtension = value;
-        //            NotifyPropertyChanged();
-        //        }
-        //    }
-        //}
         private DateTime _copyStartDateTime;
         public DateTime copyStartDateTime
         {

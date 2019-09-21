@@ -15,9 +15,6 @@ namespace EruptRecorderUnitTest.Settings
         public void FileExtensionValidationTest(bool isActive, int index, string fileExtension, string srcDir, string destDir)
         {
             CopySetting copySetting = new CopySetting();
-            copySetting.isActive = isActive;
-            copySetting.index = index;
-            copySetting.fileExtension = fileExtension;
             copySetting.srcDir = srcDir;
             copySetting.destDir = destDir;
 
@@ -35,9 +32,6 @@ namespace EruptRecorderUnitTest.Settings
         public void FileExtensionValidationWithInvalidArgsTest(bool isActive, int index, string fileExtension, string srcDir, string destDir)
         {
             CopySetting copySetting = new CopySetting();
-            copySetting.isActive = isActive;
-            copySetting.index = index;
-            copySetting.fileExtension = fileExtension;
             copySetting.srcDir = srcDir;
             copySetting.destDir = destDir;
 
