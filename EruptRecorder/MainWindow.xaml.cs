@@ -115,12 +115,6 @@ namespace EruptRecorder
                 }
             }
 
-            if (NoneOfTheCopySettingsAreActive())
-            {
-                logger.Info("有効なコピー設定が１つも存在しなかったため、トリガーファイルの読み込みは行いませんでした。");
-                return;
-            }
-
             logger.Info("トリガーの検出を開始します。");
             List<Models.EventTrigger> eventTriggers = new List<Models.EventTrigger>();
             ReadTrigerJob readTrigerJob = new ReadTrigerJob(ActiveViewModel.recordingSetting.triggerFilePath, logger);
@@ -198,7 +192,7 @@ namespace EruptRecorder
         {
             logger.Info("OKボタンがクリックされました");
             try
-            {
+                {
                 // 現在の画面上の設定値を検証する
                 BindingViewModel.IsValid();
 
@@ -210,9 +204,6 @@ namespace EruptRecorder
 
                 // もし状態が「設定不備」だった場合、正常に戻す
                 RecoverInvalidStatus();
-
-                // 設定を反映した結果、すべてのコピー設定が有効でなくなった場合、状態を「一時停止中」にする
-                SetPauseToStatusIfNoneOfTheCopySettingsAreActive();
             }
             catch (InvalidSettingsException ex)
             {
@@ -392,25 +383,6 @@ namespace EruptRecorder
             BindingViewModel.loggingSetting.logOutputDir = dialog.FileName;
         }
 
-        private bool NoneOfTheCopySettingsAreActive()
-        {
-            foreach(CopySetting copySetting in ActiveViewModel.copySettings)
-            {
-                if (copySetting.isActive) return false;
-            }
-            return true;
-        }
-
-        private void SetPauseToStatusIfNoneOfTheCopySettingsAreActive()
-        {
-            if (NoneOfTheCopySettingsAreActive())
-            {
-                UpdateStatusTo(GlobalStatus.AppStatus.Pause);
-                MessageBox.Show("すべてのコピー設定が有効でなくなったため、トリガーファイルの検出を一時停止します", "コピー設定無効", MessageBoxButton.OK, MessageBoxImage.Information);
-                logger.Info("すべてのコピー設定が有効でなくなったため、トリガーファイルの検出を一時停止します。");
-            }
-        }
-
         private void StatusButton_Click(object sender, RoutedEventArgs e)
         {
             switch (this.BindingViewModel.globalStatus.status)
@@ -436,18 +408,6 @@ namespace EruptRecorder
 
         private void TryToRestartToDetectTrigger()
         {
-            // トリガー検出を再開できるかチェック
-            if (NoneOfTheCopySettingsAreActive())
-            {
-                MessageBox.Show("有効なコピー設定が１つも存在しないため、トリガーファイルの検出を再開できませんでした。", "コピー設定無効", MessageBoxButton.OK, MessageBoxImage.Error);
-                logger.Warn("再開ボタンが押されましたが、有効なコピー設定が１つも存在しないため、トリガーファイルの検出を再開できませんでした。");
-                
-                // 現在の画面上の設定をなかったことにし、アクティブな設定の値に戻す　※有効な設定(ActiveViewModel)が分かりづらくなるため
-                BindingViewModel.ReflectTheValueOf(ActiveViewModel);
-                this.CopySettings.ItemsSource = BindingViewModel.copySettings;
-
-                return;
-            }
             UpdateStatusTo(GlobalStatus.AppStatus.Working);
             logger.Info("再開ボタンが押されました。トリガーファイルの検出を再開します。");
         }

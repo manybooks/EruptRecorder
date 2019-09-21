@@ -43,10 +43,8 @@ namespace EruptRecorder.Settings
                 {
                     new CopySetting()
                     {
-                        isActive = false,
-                        index = 1,
-                        fileExtension = "bmp",
-                        prefix = "",
+                        copyStartDateTime = new DateTime(1900, 1, 1, 0, 0, 0),
+                        copyEndDateTime = new DateTime(3000, 1, 1, 0, 0, 0),
                         srcDir = "",
                         destDir = ""
                     }
@@ -83,10 +81,8 @@ namespace EruptRecorder.Settings
                 CopySetting newOne = new CopySetting();
                 this.copySettings.Add(newOne);
 
-                this.copySettings[i].isActive = another.copySettings[i].isActive;
-                this.copySettings[i].index = another.copySettings[i].index;
-                this.copySettings[i].prefix = another.copySettings[i].prefix;
-                this.copySettings[i].fileExtension = another.copySettings[i].fileExtension;
+                this.copySettings[i].copyStartDateTime = another.copySettings[i].copyStartDateTime;
+                this.copySettings[i].copyEndDateTime = another.copySettings[i].copyEndDateTime;
                 this.copySettings[i].srcDir = another.copySettings[i].srcDir;
                 this.copySettings[i].destDir = another.copySettings[i].destDir;
             }
@@ -111,66 +107,98 @@ namespace EruptRecorder.Settings
             }
         }
 
-        public bool _isActive;
-        public bool isActive
+        //public bool _isActive;
+        //public bool isActive
+        //{
+        //    get
+        //    {
+        //        return this._isActive;
+        //    }
+        //    set
+        //    {
+        //        if (value != this._isActive)
+        //        {
+        //            this._isActive = value;
+        //            NotifyPropertyChanged();
+        //        }
+        //    }
+        //}
+        //public int _index;
+        //public int index
+        //{
+        //    get
+        //    {
+        //        return this._index;
+        //    }
+        //    set
+        //    {
+        //        if (value != this._index)
+        //        {
+        //            this._index = value;
+        //            NotifyPropertyChanged();
+        //        }
+        //    }
+        //}
+        //public string _prefix;
+        //public string prefix
+        //{
+        //    get
+        //    {
+        //        return this._prefix;
+        //    }
+        //    set
+        //    {
+        //        if (value != this._prefix)
+        //        {
+        //            this._prefix = value;
+        //            NotifyPropertyChanged();
+        //        }
+        //    }
+        //}
+        //public string _fileExtension;
+        //public string fileExtension
+        //{
+        //    get
+        //    {
+        //        return this._fileExtension;
+        //    }
+        //    set
+        //    {
+        //        if (value != this._fileExtension)
+        //        {
+        //            this._fileExtension = value;
+        //            NotifyPropertyChanged();
+        //        }
+        //    }
+        //}
+        private DateTime _copyStartDateTime;
+        public DateTime copyStartDateTime
         {
             get
             {
-                return this._isActive;
+                return this._copyStartDateTime;
             }
             set
             {
-                if (value != this._isActive)
+                if (value != this._copyStartDateTime)
                 {
-                    this._isActive = value;
+                    this._copyStartDateTime = value;
                     NotifyPropertyChanged();
                 }
             }
         }
-        public int _index;
-        public int index
+        private DateTime _copyEndDateTime;
+        public DateTime copyEndDateTime
         {
             get
             {
-                return this._index;
+                return this._copyEndDateTime;
             }
             set
             {
-                if (value != this._index)
+                if (value != this._copyEndDateTime)
                 {
-                    this._index = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-        public string _prefix;
-        public string prefix
-        {
-            get
-            {
-                return this._prefix;
-            }
-            set
-            {
-                if (value != this._prefix)
-                {
-                    this._prefix = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-        public string _fileExtension;
-        public string fileExtension
-        {
-            get
-            {
-                return this._fileExtension;
-            }
-            set
-            {
-                if (value != this._fileExtension)
-                {
-                    this._fileExtension = value;
+                    this._copyEndDateTime = value;
                     NotifyPropertyChanged();
                 }
             }
@@ -210,13 +238,12 @@ namespace EruptRecorder.Settings
 
         public bool IsValid()
         {
-            if (string.IsNullOrEmpty(this.fileExtension)) throw new InvalidSettingsException("コピー設定のファイル拡張子は入力必須です。");
-            if (this.fileExtension.StartsWith(".")) throw new InvalidSettingsException("コピー設定のファイル拡張子に'.'を含まないでください。");
-            if (!AreEqual(Regex.Matches(this.fileExtension, "[a-z]+"), this.fileExtension) && this.fileExtension != "*") throw new InvalidSettingsException("コピー設定のファイル拡張子には小文字のアルファベットまたは'*'のみを使用して下さい。");
-            if (string.IsNullOrEmpty(this.srcDir)) throw new InvalidSettingsException("コピー設定のコピー元フォルダは入力必須です。");
-            if (!Directory.Exists(this.srcDir)) throw new InvalidSettingsException($"インデックス{this.index}のコピー設定で指定されたコピー元フォルダが存在しません。");
-            if (string.IsNullOrEmpty(this.destDir)) throw new InvalidSettingsException("コピー設定のコピー先フォルダは入力必須です。");
-            if (!Directory.Exists(this.destDir)) throw new InvalidSettingsException($"インデックス{this.index}のコピー設定で指定されたコピー先フォルダが存在しません。");
+            if (this.copyStartDateTime == null) throw new InvalidSettingsException("コピー開始日時は入力必須です。");
+            if (this.copyEndDateTime == null) throw new InvalidSettingsException("コピー終了日時は入力必須です。");
+            if (string.IsNullOrEmpty(this.srcDir)) throw new InvalidSettingsException("コピー元フォルダは入力必須です。");
+            if (!Directory.Exists(this.srcDir)) throw new InvalidSettingsException($"指定されたコピー元フォルダが存在しません。");
+            if (string.IsNullOrEmpty(this.destDir)) throw new InvalidSettingsException("コピー先フォルダは入力必須です。");
+            if (!Directory.Exists(this.destDir)) throw new InvalidSettingsException($"指定されたコピー先フォルダが存在しません。");
 
             return true;
         }

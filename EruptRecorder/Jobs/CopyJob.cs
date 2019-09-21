@@ -15,6 +15,7 @@ namespace EruptRecorder.Jobs
     public class CopyJob
     {
         private ILog logger { get; set; }
+        private const int IndexToCopy = 1;
 
         public CopyJob(ILog logger)
         {
@@ -23,31 +24,29 @@ namespace EruptRecorder.Jobs
 
         public void Run(List<EventTrigger> trigers, CopySetting copySetting, RecordingSetting recordingSetting, ILog logger)
         {
-            if (!copySetting.isActive) return;
             if (trigers == null || trigers?.Count() == 0)
             {
-                logger.Info($"最後にジョブを起動した時刻{recordingSetting.timeOfLastRun}から現在までで、インデックス{copySetting.index}のコピーを要求する入力データはありませんでした。");
+                logger.Info($"最後にジョブを起動した時刻{recordingSetting.timeOfLastRun}から現在までで、コピーを要求する入力データはありませんでした。");
                 return;
             }
             List<EventTrigger> trigersToCheck = trigers.OrderBy(triger => triger.timeStamp)
                                                        .ToList();
-            List<CopyCondition> copyConditions = GetCopyConditionsFrom(trigersToCheck, copySetting.index, recordingSetting.minutesToGoBack);
+            List<CopyCondition> copyConditions = GetCopyConditionsFrom(trigersToCheck, IndexToCopy, recordingSetting.minutesToGoBack);
             List<FileInfo> filesToCopy = GetCopyTargetFiles(copyConditions, copySetting);
             if (filesToCopy?.Count() == 0)
             {
-                string prefixCondition = (string.IsNullOrEmpty(copySetting.prefix)) ? string.Empty : $"名前が'{copySetting.prefix}'で始まり、";
-                logger.Warn($"コピー元のディレクトリ{copySetting.srcDir}に、{prefixCondition}拡張子が'{copySetting.fileExtension}'のファイルが見つかりませんでした。");
+                logger.Warn($"コピー元のディレクトリ{copySetting.srcDir}に、コピー対象のファイルが見つかりませんでした。");
                 return;
             }
 
             bool doneSuccessfully = ExecuteCopy(filesToCopy, copySetting);
             if (doneSuccessfully)
             {
-                logger.Info($"インデックス{copySetting.index}のコピーが終了しました。");
+                logger.Info($"コピーが終了しました。");
             }
             else
             {
-                logger.Error($"インデックス{copySetting.index}のコピーに失敗しました。");
+                logger.Error($"コピーに失敗しました。");
             }
         }
 
@@ -117,17 +116,16 @@ namespace EruptRecorder.Jobs
                 {
                     var filesToCopy = srcDirectory.GetFiles()
                                                   .Where(f => copyCondition.from <= f.CreationTime && f.CreationTime <= copyCondition.to)
-                                                  .Where(f => f.Name.StartsWith(copySetting.prefix))
-                                                  .Where(f => Regex.IsMatch(f.Name, $".+\\.{copySetting.fileExtension}"))
+                                                  .Where(f => copySetting.copyStartDateTime <= f.CreationTime && f.CreationTime <= copySetting.copyEndDateTime)
                                                   .ToList();
                     targetFiles.AddRange(filesToCopy);
                 }
             }
             catch (DirectoryNotFoundException)
             {
-                logger.Error($"インデックス{copySetting.index}のコピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
-                System.Windows.MessageBox.Show($"インデックス{copySetting.index}のコピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。", "コピー元フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                throw new InvalidSettingsException($"インデックス{copySetting.index}のコピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
+                logger.Error($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
+                System.Windows.MessageBox.Show($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。", "コピー元フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                throw new InvalidSettingsException($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
             }
             return targetFiles.Distinct(new ImageFileComparer()).ToList();
         }
@@ -137,7 +135,7 @@ namespace EruptRecorder.Jobs
             bool doneSuccessfully = true;
             try
             {
-                logger.Info($"インデックス{copySetting.index}のファイルコピーを開始します。");
+                logger.Info($"ファイルコピーを開始します。");
                 DirectoryInfo destDirectory = new DirectoryInfo(copySetting.destDir);
                 foreach(FileInfo f in filesToCopy)
                 {
@@ -147,13 +145,13 @@ namespace EruptRecorder.Jobs
             }
             catch (DirectoryNotFoundException)
             {
-                logger.Error($"インデックス{copySetting.index}のコピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
-                System.Windows.MessageBox.Show($"インデックス{copySetting.index}のコピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。", "コピー先フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                throw new InvalidSettingsException($"インデックス{copySetting.index}のコピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
+                logger.Error($"コピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
+                System.Windows.MessageBox.Show($"コピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。", "コピー先フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                throw new InvalidSettingsException($"コピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
             }
             catch (Exception ex)
             {
-                logger.Error($"インデックス{copySetting.index}のファイルコピーに失敗しました。エラー内容は以下を参照してください。");
+                logger.Error($"ファイルコピーに失敗しました。エラー内容は以下を参照してください。");
                 logger.Error("**************************************************************************************************");
                 logger.Error(ex.ToString());
                 logger.Error("**************************************************************************************************");

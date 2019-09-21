@@ -30,14 +30,16 @@
         
         <DataGrid Name="CopySettings" ItemsSource="{Binding}" IsReadOnly="False" AutoGenerateColumns="False" Margin="40,120,20,200" MinRowHeight="20" CanUserAddRows="True" CanUserDeleteRows="True">
             <DataGrid.Columns>
+                <!--
                 <DataGridCheckBoxColumn Binding="{Binding Path=isActive}" Header="有効"/>
                 <DataGridTextColumn Binding="{Binding Path=index}" Width="30" Header="INX"/>
                 <DataGridTextColumn Binding="{Binding Path=prefix}" Width="80" Header="Prefix"/>
                 <DataGridTextColumn Binding="{Binding Path=fileExtension}" Width="50" Header="拡張子"/>
-                <!--
                 <DataGridTextColumn Binding="{Binding Path=destDir}" Width="*" Header="コピー先"/>
                 <DataGridTextColumn Binding="{Binding Path=srcDir}" Width="*" Header="コピー元"/>
                 -->
+                <DataGridTextColumn Binding="{Binding Path=copyStartDateTime, StringFormat='yyyy/MM/dd HH:mm:ss', ValidatesOnExceptions=True}" Width="80" Header="コピー開始日時"/>
+                <DataGridTextColumn Binding="{Binding Path=copyEndDateTime, StringFormat='yyyy/MM/dd HH:mm:ss', ValidatesOnExceptions=True}" Width="80" Header="コピー終了日時"/>
                 <DataGridTemplateColumn x:Name="SrcDirColumn" Width="*" Header="コピー元フォルダ">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
