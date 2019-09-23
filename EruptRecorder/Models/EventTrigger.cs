@@ -31,7 +31,37 @@ namespace EruptRecorder.Models
                 return new EventTrigger(timeStamp, flag);
             }
 
-            throw new FormatException("トリガーファイルの形式が不正です。トリガーファイルの形式は{yyyyMMddhhmmssff} ,{index}である必要があります。");
+            throw new Exception($"予期せぬ入力トリガーフォーマット'{line}'");
+        }
+
+        public static bool IsValidInputLine(string line)
+        {
+            if (!line.Contains(","))
+            {
+                return false;
+            }
+            var values = line.Split(',');
+            if (values[0].Length < 16)
+            {
+                return false;
+            }
+            DateTime timeStamp;
+            bool isValidDatetime = DateTime.TryParseExact(values[0].Substring(0, 16), "yyyyMMddHHmmssff", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out timeStamp);
+            if (!isValidDatetime)
+            {
+                return false;
+            }
+            int flag;
+            bool isValidFlag = int.TryParse(values[1], out flag);
+            if (!isValidFlag)
+            {
+                return false;
+            }
+            if (flag != 0 && flag != 1)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

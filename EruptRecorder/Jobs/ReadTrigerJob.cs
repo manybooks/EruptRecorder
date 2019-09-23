@@ -45,6 +45,18 @@ namespace EruptRecorder.Jobs
                     while (!sr.EndOfStream)
                     {
                         var line = sr.ReadLine();
+                        if (line.Equals(string.Empty))
+                        {
+                            // 空行だった場合は飛ばす
+                            continue;
+                        }
+                        if (!EventTrigger.IsValidInputLine(line))
+                        {
+                            // トリガーファイルの形式が不正だったとき
+                            logger.Warn("トリガーファイルの形式が不正です。トリガーファイルの形式は{yyyyMMddhhmmssff} ,{index}である必要があります。");
+                            logger.Warn($"対象データ:{line}");
+                            continue;
+                        }
                         EventTrigger eventTriger = EventTrigger.Parse(line);
 
                         result.Add(eventTriger);
@@ -58,15 +70,9 @@ namespace EruptRecorder.Jobs
                 System.Windows.MessageBox.Show($"トリガーとして指定されたファイル{inputFilePath}が存在しません。", "トリガーファイル名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 throw new InvalidSettingsException($"トリガーとして指定されたファイル{inputFilePath}が存在しません。");
             }
-            catch (FormatException ex)
-            {
-                // トリガーファイルの形式が不正だったとき
-                logger.Error($"{ex.Message}");
-                System.Windows.MessageBox.Show($"{ex.Message}", "トリガーのフォーマット不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                throw ex;
-            }
             catch (ArgumentException)
             {
+
                 // トリガーファイルパスが空欄だったとき
                 logger.Warn("トリガーファイル名が入力されていません。");
                 throw new InvalidSettingsException("トリガーファイル名が入力されていません。");
