@@ -18,5 +18,10 @@ namespace EruptRecorder.Utils
             DateTime roundDowned = new DateTime(origin.Year, origin.Month, origin.Day, origin.Hour, origin.Minute, origin.Second, 0);
             return roundDowned.AddSeconds(1);
         }
+
+        public static DateTime RoundDownMinutes(DateTime origin)
+        {
+            return new DateTime(origin.Year, origin.Month, origin.Day, origin.Hour, 0, 0);
+        }
     }
 }
