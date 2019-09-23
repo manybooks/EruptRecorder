@@ -109,53 +109,96 @@ namespace EruptRecorder.Jobs
         public List<FileInfo> GetCopyTargetFiles(List<CopyCondition> copyConditions, CopySetting copySetting)
         {
             List<FileInfo> targetFiles = new List<FileInfo>();
-            try
+            DirectoryInfo srcRootDir = new DirectoryInfo(copySetting.srcDir);
+            if (!srcRootDir.Exists)
             {
-                DirectoryInfo srcDirectory = new DirectoryInfo(copySetting.srcDir);
-                foreach(CopyCondition copyCondition in copyConditions)
-                {
-                    var filesToCopy = srcDirectory.GetFiles()
-                                                  .Where(f => copyCondition.from <= f.CreationTime && f.CreationTime <= copyCondition.to)
-                                                  .Where(f => copySetting.copyStartDateTime <= f.CreationTime && f.CreationTime <= copySetting.copyEndDateTime)
-                                                  .ToList();
-                    targetFiles.AddRange(filesToCopy);
-                }
-            }
-            catch (DirectoryNotFoundException)
-            {
-                logger.Error($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
+                logger.Error($"設定画面で入力されたコピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
                 System.Windows.MessageBox.Show($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。", "コピー元フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 throw new InvalidSettingsException($"コピー元フォルダ '{copySetting.srcDir}' が見つかりませんでした。");
             }
+            foreach(CopyCondition copyCondition in copyConditions)
+            {
+                List<DirectoryInfo> directoriesToSeek = GetDirectoriesToSeek(copyCondition, srcRootDir);
+                foreach(DirectoryInfo srcDirectory in directoriesToSeek)
+                {
+                    try
+                    {
+                        var filesToCopy = srcDirectory.GetFiles()
+                                .Where(f => copyCondition.from <= f.CreationTime && f.CreationTime <= copyCondition.to)
+                                .Where(f => copySetting.copyStartDateTime <= f.CreationTime && f.CreationTime <= copySetting.copyEndDateTime)
+                                .ToList();
+                        targetFiles.AddRange(filesToCopy);
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        logger.Error($"コピー元フォルダ '{srcDirectory.FullName}' が見つかりませんでした。");
+                        System.Windows.MessageBox.Show($"コピー元フォルダ '{srcDirectory.FullName}' が見つかりませんでした。", "コピー元フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    }
+                }
+            }
             return targetFiles.Distinct(new ImageFileComparer()).ToList();
+        }
+
+        private List<DirectoryInfo> GetDirectoriesToSeek(CopyCondition copyCondition, DirectoryInfo srcRootDir)
+        {
+            List<string> yyyymmddhhList = copyCondition.ToDaysList();
+            List<DirectoryInfo> result = new List<DirectoryInfo>();
+            foreach(string yyyymmddhh in yyyymmddhhList)
+            {
+                string yyyymmdd = yyyymmddhh.Substring(0, 8);
+                string hh = yyyymmddhh.Substring(8, 2);
+       
+                DirectoryInfo dayDir = srcRootDir.GetDirectories(yyyymmdd).ToList().FirstOrDefault(null);
+                if (dayDir == null)
+                {
+                    logger.Warn($"コピー元フォルダ {srcRootDir.FullName} の中に、コピー対象の日付フォルダ {yyyymmdd} が見つかりませんでした。");
+                    continue;
+                }
+                DirectoryInfo hourDir = dayDir.GetDirectories(hh).ToList().FirstOrDefault(null);
+                if (hourDir == null)
+                {
+                    logger.Warn($"コピー元フォルダ {dayDir.FullName} の中に、コピー対象の時刻フォルダ {hh} が見つかりませんでした。");
+                    continue;
+                }
+                result.Add(hourDir);
+            }
+            return result;
         }
         
         public bool ExecuteCopy(List<FileInfo> filesToCopy, CopySetting copySetting)
         {
             bool doneSuccessfully = true;
-            try
+            logger.Info($"ファイルコピーを開始します。");
+            DirectoryInfo destRootDir = new DirectoryInfo(copySetting.destDir);
+            if (!destRootDir.Exists)
             {
-                logger.Info($"ファイルコピーを開始します。");
-                DirectoryInfo destDirectory = new DirectoryInfo(copySetting.destDir);
-                foreach(FileInfo f in filesToCopy)
-                {
-                    f.CopyTo(Path.Combine(destDirectory.FullName, f.Name), overwrite: true);
-                    logger.Info($"ファイル '{f.Name}'を'{copySetting.srcDir}'から'{copySetting.destDir}'へコピーしました。");
-                }
-            }
-            catch (DirectoryNotFoundException)
-            {
-                logger.Error($"コピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
+                logger.Error($"設定画面で入力されたコピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
                 System.Windows.MessageBox.Show($"コピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。", "コピー先フォルダ名不正", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 throw new InvalidSettingsException($"コピー先フォルダ '{copySetting.destDir}' が見つかりませんでした。");
             }
-            catch (Exception ex)
+
+            foreach(FileInfo f in filesToCopy)
             {
-                logger.Error($"ファイルコピーに失敗しました。エラー内容は以下を参照してください。");
-                logger.Error("**************************************************************************************************");
-                logger.Error(ex.ToString());
-                logger.Error("**************************************************************************************************");
-                throw ex;
+                try
+                {
+                    string yyyymmdd = f.CreationTime.ToString("yyyyMMdd");
+                    string hh = f.CreationTime.ToString("hh");
+                    DirectoryInfo dayDir = new DirectoryInfo(Path.Combine(destRootDir.FullName, yyyymmdd));
+                    dayDir.Create();
+                    DirectoryInfo hourDir = new DirectoryInfo(Path.Combine(dayDir.FullName, hh));
+                    hourDir.Create();
+
+                    f.CopyTo(Path.Combine(hourDir.FullName, f.Name), overwrite: true);
+                    logger.Info($"ファイル '{f.Name}'を'{copySetting.srcDir}'から'{copySetting.destDir}'へコピーしました。");
+                }
+                catch (Exception ex)
+                {
+                    logger.Error($"ファイル {f.FullName} のコピーに失敗しました。エラー内容は以下を参照してください。");
+                    logger.Error("**************************************************************************************************");
+                    logger.Error(ex.ToString());
+                    logger.Error("**************************************************************************************************");
+                    throw ex;
+                }
             }
             return doneSuccessfully;
         }
@@ -182,8 +225,21 @@ namespace EruptRecorder.Jobs
         
         public bool IsValid()
         {
-            if (from != null && to != null) return true;
-            return false;
+            if (from == null || to == null) return false;
+            if (from > to) return false;
+            return true;
+        }
+
+        public List<string> ToDaysList()
+        {
+            List<string> yyyymmddhhList = new List<string>();
+            DateTime current = DateTimeUtil.RoundDownMinutes(this.from);
+            while (current <= this.to)
+            {
+                yyyymmddhhList.Add(current.ToString("yyyyMMddHH"));
+                current = current.AddHours(1);
+            }
+            return yyyymmddhhList;
         }
     }
 }
