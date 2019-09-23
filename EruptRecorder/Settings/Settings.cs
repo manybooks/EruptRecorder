@@ -163,6 +163,7 @@ namespace EruptRecorder.Settings
         {
             if (this.copyStartDateTime == null) throw new InvalidSettingsException("コピー開始日時は入力必須です。");
             if (this.copyEndDateTime == null) throw new InvalidSettingsException("コピー終了日時は入力必須です。");
+            if (this.copyStartDateTime > this.copyEndDateTime) throw new InvalidSettingsException("コピー開始日時とコピー終了日時の前後関係が不正です。");
             if (string.IsNullOrEmpty(this.srcDir)) throw new InvalidSettingsException("コピー元フォルダは入力必須です。");
             if (!Directory.Exists(this.srcDir)) throw new InvalidSettingsException($"指定されたコピー元フォルダが存在しません。");
             if (string.IsNullOrEmpty(this.destDir)) throw new InvalidSettingsException("コピー先フォルダは入力必須です。");
