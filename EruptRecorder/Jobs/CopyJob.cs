@@ -124,8 +124,8 @@ namespace EruptRecorder.Jobs
                     try
                     {
                         var filesToCopy = srcDirectory.GetFiles()
-                                .Where(f => copyCondition.from <= f.CreationTime && f.CreationTime <= copyCondition.to)
-                                .Where(f => copySetting.copyStartDateTime <= f.CreationTime && f.CreationTime <= copySetting.copyEndDateTime)
+                                .Where(f => copyCondition.from <= f.LastWriteTime && f.LastWriteTime <= copyCondition.to)
+                                .Where(f => copySetting.copyStartDateTime <= f.LastWriteTime && f.LastWriteTime <= copySetting.copyEndDateTime)
                                 .ToList();
                         targetFiles.AddRange(filesToCopy);
                     }
@@ -148,13 +148,13 @@ namespace EruptRecorder.Jobs
                 string yyyymmdd = yyyymmddhh.Substring(0, 8);
                 string hh = yyyymmddhh.Substring(8, 2);
        
-                DirectoryInfo dayDir = srcRootDir.GetDirectories(yyyymmdd).ToList().FirstOrDefault(null);
+                DirectoryInfo dayDir = srcRootDir.GetDirectories(yyyymmdd).ToList().FirstOrDefault();
                 if (dayDir == null)
                 {
                     logger.Warn($"コピー元フォルダ {srcRootDir.FullName} の中に、コピー対象の日付フォルダ {yyyymmdd} が見つかりませんでした。");
                     continue;
                 }
-                DirectoryInfo hourDir = dayDir.GetDirectories(hh).ToList().FirstOrDefault(null);
+                DirectoryInfo hourDir = dayDir.GetDirectories(hh).ToList().FirstOrDefault();
                 if (hourDir == null)
                 {
                     logger.Warn($"コピー元フォルダ {dayDir.FullName} の中に、コピー対象の時刻フォルダ {hh} が見つかりませんでした。");
@@ -181,8 +181,8 @@ namespace EruptRecorder.Jobs
             {
                 try
                 {
-                    string yyyymmdd = f.CreationTime.ToString("yyyyMMdd");
-                    string hh = f.CreationTime.ToString("hh");
+                    string yyyymmdd = f.LastWriteTime.ToString("yyyyMMdd");
+                    string hh = f.LastWriteTime.ToString("hh");
                     DirectoryInfo dayDir = new DirectoryInfo(Path.Combine(destRootDir.FullName, yyyymmdd));
                     dayDir.Create();
                     DirectoryInfo hourDir = new DirectoryInfo(Path.Combine(dayDir.FullName, hh));
@@ -209,7 +209,7 @@ namespace EruptRecorder.Jobs
         public bool Equals(FileInfo f1, FileInfo f2)
         {
             return f1.FullName == f2.FullName &&
-                   f1.CreationTime == f2.CreationTime;
+                   f1.LastWriteTime == f2.LastWriteTime;
         }
 
         public int GetHashCode(FileInfo f)
