@@ -38,8 +38,8 @@ namespace EruptRecorder.Settings
             {
                 copySetting = new CopySetting()
                 {
-                    copyStartDateTime = new DateTime(1900, 1, 1, 0, 0, 0),
-                    copyEndDateTime = new DateTime(3000, 1, 1, 0, 0, 0),
+                    copyStartDateTime = new DateTime(2019, 1, 1, 0, 0, 0),
+                    copyEndDateTime = new DateTime(2019, 1, 1, 0, 0, 0),
                     srcDir = "",
                     destDir = ""
                 },
